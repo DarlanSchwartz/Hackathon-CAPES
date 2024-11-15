@@ -1,11 +1,13 @@
 import styled from "styled-components";
 import PageDefaultSkeleton from "./DefaultSkeleton.page";
 import { useNavigate } from "react-router-dom";
+import Header from "../Components/Header.component";
 
 export default function PageHero() {
     const navigate = useNavigate();
     return (
         <PageDefaultSkeleton>
+            <Header />
             <SCPageLogin >
                 <HeroImageContainer>
                     <Title>ATENA IA</Title>
@@ -33,6 +35,7 @@ const HeroImageContainer = styled.div`
     height: 90svh;
     flex-shrink: 0;
     min-width: 1100px;
+    pointer-events: none;
 `;
 
 const CallToAction = styled.div`
@@ -54,12 +57,14 @@ const HeroBackground = styled.img`
     transform: translate(-28%,-55%);
     height: 70svh;
     min-height: 1024px;
+    pointer-events: none;
     z-index: -1;
 `;
 const HeroImage = styled.img`
     width: 100%;
     height: 100%;
     flex-shrink: 0;
+    pointer-events: none;
 `;
 
 const Button = styled.button`

@@ -14,7 +14,7 @@ export default function PageChat() {
     return (
         <PageDefaultSkeleton>
             <SCPageLogin >
-                <Header sidebarWidth={80} />
+                <Header sidebarWidth={80} showAccessibilityToggle showChatSelector />
                 <Sidebar>
                     <SidebarTopSettingsContainer>
                         <SidebarMenuItem icon={<GiHamburgerMenu />} action={() => { }} />

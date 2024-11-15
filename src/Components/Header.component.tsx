@@ -5,18 +5,25 @@ import { FaCaretDown } from "react-icons/fa";
 
 type HeaderProps = {
     sidebarWidth?: number;
+    showChatSelector?: boolean;
+    showAccessibilityToggle?: boolean;
 };
 
-export default function Header({ sidebarWidth = 0 }: HeaderProps) {
+export default function Header({ sidebarWidth = 0, showAccessibilityToggle, showChatSelector }: HeaderProps) {
     const [accessibility, setAccessibility] = useState(false);
     return (
         <SCHeader style={{ width: `calc(100% - ${sidebarWidth}px)` }}>
-            <h1>ATENA<FaCaretDown /></h1>
+            {
+                showChatSelector && <h1>ATENA<FaCaretDown /></h1>
+            }
             <HeaderRight>
-                <AccessibilityContainer>
-                    Acessibilidade: Deficiência Visual
-                    <Toggle value={accessibility} setValue={setAccessibility} />
-                </AccessibilityContainer>
+                {
+                    showAccessibilityToggle &&
+                    <AccessibilityContainer>
+                        Acessibilidade: Deficiência Visual
+                        <Toggle value={accessibility} setValue={setAccessibility} />
+                    </AccessibilityContainer>
+                }
                 <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
                     <img src="/assets/images/capes.png" alt="" style={{ width: "40px", height: "37px" }} />
                     <img src="/assets/images/gov.png" alt="" style={{ width: "65px", height: "37px" }} />
