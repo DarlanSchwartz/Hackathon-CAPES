@@ -28,6 +28,7 @@ const ChatDefaultActionIcon = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+   
 `;
 const SCChatDefaultAction = styled.div`
     width: 100%;
@@ -38,4 +39,8 @@ const SCChatDefaultAction = styled.div`
     max-width: 250px;
     border-radius: 12px;
     background: ${({ theme }) => theme.colors.lightPink2};
+    span{
+        font-size: 16px;
+        line-height: 22px;
+    }
 `;

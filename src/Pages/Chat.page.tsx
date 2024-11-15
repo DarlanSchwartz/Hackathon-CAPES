@@ -10,7 +10,14 @@ import { IoSettingsOutline } from "react-icons/io5";
 import SidebarMenuItem from "../Components/SidebarMenuItem.component";
 import ChatDefaultAction from "../Components/ChatDefaultAction.component";
 import Header from "../Components/Header.component";
+import { FormEvent } from "react";
 export default function PageChat() {
+
+    function handleChat(e: FormEvent) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
     return (
         <PageDefaultSkeleton>
             <SCPageLogin >
@@ -29,18 +36,18 @@ export default function PageChat() {
                 <ChatWindowContainer>
                     <ChatWindow>
                         <ChatWindowTop>
-                            <div>
+                            <section>
                                 <ChatGreetings>Olá, tudo bem?</ChatGreetings>
                                 <ChatGreetingsSpan>Como podemos te ajudar hoje?</ChatGreetingsSpan>
-                            </div>
+                            </section>
                             <ChatDefaultActions>
-                                <ChatDefaultAction text="Generate unit tests for the following C# function" />
-                                <ChatDefaultAction text="Relizar Pesquisas de " />
-                                <ChatDefaultAction text="Teach me the concept of game theory in simple terms" />
-                                <ChatDefaultAction text="Walk me through how to apply for a new role" />
+                                <ChatDefaultAction text="Faça Upload do seu Artigo e descubra quais periódicos são mais adequados para sua publicação." />
+                                <ChatDefaultAction text="Procure Periódicos da sua área de atuação" />
+                                <ChatDefaultAction text="Busque conteúdos sobre Financiamentos  de Pesquisas" />
+                                <ChatDefaultAction text="Busque informações de currículos acadêmicos por Região, Instituições e Pessoas." />
                             </ChatDefaultActions>
                         </ChatWindowTop>
-                        <ChatInputContainer>
+                        <ChatInputContainer onSubmit={handleChat}>
                             <input type="text" placeholder="Faça sua Pesquisa aqui" />
                             <LuImage fontSize={30} style={{ position: "absolute", right: 70 }} />
                             <IoMdMic fontSize={30} style={{ position: "absolute", right: 20 }} />
