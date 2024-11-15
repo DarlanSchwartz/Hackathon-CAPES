@@ -1,4 +1,4 @@
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import { LuImage } from "react-icons/lu";
 import { IoMdMic } from "react-icons/io";
 import PageDefaultSkeleton from "./DefaultSkeleton.page";
