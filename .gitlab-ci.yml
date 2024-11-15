@@ -1,0 +1,57 @@
+image: node:20
+stages:
+  - deploy_dev
+  - deploy_hml
+  - deploy_prod
+
+.cache: &cache
+  cache:
+    key:
+      files:
+        - package-lock.json
+        - tsconfig.json
+    paths:
+      - node_modules
+
+.build: &build
+  - echo "Building the project"
+  - npm install -g firebase-tools
+  - npm install && npm run build
+
+.deploy: &deploy
+  - echo "Deploying to Firebase"
+  - firebase deploy -m "Pipeline $CI_PIPELINE_ID, build $CI_BUILD_ID" --non-interactive --project $FIREBASE_PROJECT_ID
+
+deploy_dev:
+  stage: deploy_dev
+  environment: dev
+  <<: *cache
+  variables:
+    VITE_API_URL: $VITE_API_URL
+  script:
+    - *build
+    - *deploy
+  only:
+    - dev
+
+deploy_hml:
+  stage: deploy_hml
+  environment: hml
+  <<: *cache
+  script:
+    - *build
+    - *deploy
+  only:
+    - hml
+
+deploy_prod:
+  stage: deploy_prod
+  environment: production
+  <<: *cache
+  script:
+    - *build
+    - *deploy
+  only:
+    - main
+  when: manual
+  allow_failure: false
