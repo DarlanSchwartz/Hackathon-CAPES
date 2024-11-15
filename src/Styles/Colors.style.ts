@@ -8,6 +8,7 @@ export const LightColors = {
     wppGreen: "#12A234",
     lightPink: "#F7F2FA",
     lightPink2: "#E6E0E9",
+    toggleBtnBackground: "#79747E",
 };
 
 export const DarkColors: typeof LightColors = {
@@ -20,4 +21,5 @@ export const DarkColors: typeof LightColors = {
     wppGreen: "#12A234",
     lightPink: "#F7F2FA",
     lightPink2: "#E6E0E9",
+    toggleBtnBackground: "#79747E",
 } as const;

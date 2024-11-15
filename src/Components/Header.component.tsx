@@ -1,28 +1,40 @@
 import styled from "styled-components";
+import Toggle from "./Toggle.component";
+import { useState } from "react";
+import { FaCaretDown } from "react-icons/fa";
 
 type HeaderProps = {
     sidebarWidth?: number;
 };
 
 export default function Header({ sidebarWidth = 0 }: HeaderProps) {
+    const [accessibility, setAccessibility] = useState(false);
     return (
         <SCHeader style={{ width: `calc(100% - ${sidebarWidth}px)` }}>
-            <h1>Atena</h1>
-            <AccesibilityContainer>
-                Acessibilidade: Deficiência Visual
-                <Toggle></Toggle>
-            </AccesibilityContainer>
-            <img src="/assets/images/capes.png" alt="" style={{ width: "40px", height: "37px" }} />
-            <img src="/assets/images/gov.png" alt="" style={{ width: "65px", height: "37px" }} />
+            <h1>ATENA<FaCaretDown /></h1>
+            <HeaderRight>
+                <AccessibilityContainer>
+                    Acessibilidade: Deficiência Visual
+                    <Toggle value={accessibility} setValue={setAccessibility} />
+                </AccessibilityContainer>
+                <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                    <img src="/assets/images/capes.png" alt="" style={{ width: "40px", height: "37px" }} />
+                    <img src="/assets/images/gov.png" alt="" style={{ width: "65px", height: "37px" }} />
+                </div>
+            </HeaderRight>
         </SCHeader>
     );
 }
 
-const Toggle = styled.input.attrs({ type: "checkbox" })`
-
+const HeaderRight = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 30px;
 `;
+const AccessibilityContainer = styled.div`
+    display: flex;
+    align-items: center;
 
-const AccesibilityContainer = styled.div`
 `;
 
 const SCHeader = styled.header`
