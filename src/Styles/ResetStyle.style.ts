@@ -47,13 +47,13 @@ html, body, span, applet, object, iframe,
     body,html{
 		height: 100%;
         min-height: 100% !important;
-        background-color: ${({ theme }) => theme.background};
+        background-color: ${({ theme }) => theme.colors.background};
     }
 
     #root{
         min-height: 100%;
 		max-height: fit-content;
-		
+		background-color: ${({ theme }) => theme.colors.background} !important
     }
 
     input{

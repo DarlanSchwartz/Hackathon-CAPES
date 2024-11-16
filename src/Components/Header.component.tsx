@@ -41,7 +41,7 @@ const HeaderRight = styled.div`
 const AccessibilityContainer = styled.div`
     display: flex;
     align-items: center;
-
+    color: ${({ theme }) => theme.colors.headerText};
 `;
 
 const SCHeader = styled.header`
@@ -51,6 +51,9 @@ const SCHeader = styled.header`
     position: fixed;
     top: 0;
     right: 0;
+    h1{
+        color: ${({ theme }) => theme.colors.headerText};
+    }
     display: flex;
     align-items: center;
     flex-direction: row;

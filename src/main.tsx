@@ -18,7 +18,7 @@ const client = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={client}>
-        <ThemeContextProvider>
+        <ThemeContextProvider >
             <BrowserRouter>
                 <ResetStyle />
                 <App />

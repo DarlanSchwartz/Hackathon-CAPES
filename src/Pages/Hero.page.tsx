@@ -103,7 +103,7 @@ const SCPageLogin = styled.div`
 const Title = styled.h1`
     font-family: Barlow;
     font-size: 240.935px;
-    color: #191919;
+    color: ${({ theme }) => theme.colors.text};
     text-shadow: 5px 4px 11px rgba(0, 0, 0, 0.25);
     font-style: normal;
     font-weight: 800;
@@ -118,7 +118,7 @@ const Title = styled.h1`
 `;
 
 const Introduction = styled.p`
-    color: #232323;
+    color: ${({ theme }) => theme.colors.text};
     text-align: justify;
     font-family: Rubik;
     font-size: 24px;

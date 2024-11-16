@@ -1,9 +1,12 @@
 import styled, { useTheme } from "styled-components";
 
-export default function SidebarMenuItem({ icon, action, variant = "default" }: { icon: React.ReactNode, action: () => void; variant?: "default" | "active"; }) {
+export default function SidebarMenuItem({ icon, action, variant = "default", popup, showPopup }: { icon: React.ReactNode, action: () => void; variant?: "default" | "active"; popup?: React.ReactNode, showPopup?: boolean; }) {
     const theme = useTheme();
     return (
         <SCSidebarMenuItem>
+            {
+                showPopup && <div style={{ zIndex: 999 }}>{popup}</div>
+            }
             <button onClick={action} style={variant === "active" ? { backgroundColor: theme.colors.lightPink2, borderRadius: 10 } : undefined}>
                 {icon}
             </button>
@@ -15,11 +18,13 @@ export default function SidebarMenuItem({ icon, action, variant = "default" }: {
 const SCSidebarMenuItem = styled.li`
     height: 40px;
     width: 40px;
+    position: relative;
     svg{
         width: 100%;
         height: 100%;
         font-size: 30px;
         flex-shrink: 0;
+        color:${({ theme }) => theme.colors.sidebarIcon};
     }
     button{
         background: 0;

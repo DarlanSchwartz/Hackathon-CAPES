@@ -10,7 +10,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import SidebarMenuItem from "../Components/SidebarMenuItem.component";
 import ChatDefaultAction from "../Components/ChatDefaultAction.component";
 import Header from "../Components/Header.component";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import ChatService from "../Services/Chat.service";
 import { ThreeDots } from 'react-loader-spinner';
@@ -19,7 +19,14 @@ import { ChatRoles } from "../Protocols/Chat.types";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import Toaster from "../Utils/Notifications.service";
 import { FaRegStopCircle } from "react-icons/fa";
+import { GoMoon } from "react-icons/go";
 import useTypeWriter from "../Hooks/useTypeWriter.hook";
+import Toggle from "../Components/Toggle.component";
+import { ThemeContext } from "../Contexts/Theme.context";
+//Refinar o prompt de maquina
+// POssibilitar envio de audio e resposta com adio
+// Possibilitar envio de arquivos de imagem 
+
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
     const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
@@ -27,6 +34,8 @@ export default function PageChat() {
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLInputElement>(null);
     const chatHistoryRef = useRef<HTMLDivElement>(null);
+    const { darkMode, setDarkMode } = useContext(ThemeContext);
+    const [showSettings, setShowSettings] = useState(false);
     const [isAwaitingResponse, setIsAwaitingResponse] = useState(false);
     const theme = useTheme();
     const { mutate: chat } = useMutation({
@@ -94,7 +103,16 @@ export default function PageChat() {
                     <SidebarActionsGroupContainer>
                         <SidebarMenuItem icon={<PiWarningCircleFill />} action={() => { }} />
                         <SidebarMenuItem icon={<GoClock />} action={() => { }} />
-                        <SidebarMenuItem icon={<IoSettingsOutline />} action={() => { }} />
+                        <SidebarMenuItem
+                            icon={<IoSettingsOutline />}
+                            action={() => setShowSettings(!showSettings)}
+                            showPopup={showSettings}
+                            popup={
+                                <PopUpSettings>
+                                    <GoMoon fontSize={30} style={{ width: "auto", height: "auto" }} /><span>Dark Mode</span><Toggle value={darkMode} setValue={setDarkMode} />
+                                </PopUpSettings>
+                            }
+                        />
                     </SidebarActionsGroupContainer>
                 </Sidebar>
                 <ChatWindowContainer>
@@ -177,6 +195,29 @@ export default function PageChat() {
 }
 
 
+const PopUpSettings = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    position: absolute;
+    top: -250%;
+    left:100%;
+    width: 240px;
+    animation: fadein 200ms forwards;
+    span{
+        white-space: nowrap;
+        color: ${({ theme }) => theme.colors.text};
+    }
+    svg{
+        font-size: 30px;
+    }
+    background-color: ${({ theme }) => theme.colors.lightPink};
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+`;
+
 const ChatHistory = styled.div`
     display: flex;
     flex-direction: column;
@@ -199,7 +240,7 @@ const ChatInputContainer = styled.form`
     position: relative;
     justify-self: flex-end;
     svg{
-        color: #49454F;
+        color: ${({ theme }) => theme.colors.text};
         cursor: pointer;
     }
     input{
@@ -214,7 +255,7 @@ const ChatInputContainer = styled.form`
         font-weight: 400;
         line-height: 24px; /* 150% */
         letter-spacing: 0.5px;
-        color: black;
+        color:  ${({ theme }) => theme.colors.text};
     }
 `;
 const ChatDefaultActions = styled.div`
@@ -282,7 +323,7 @@ const SidebarTopSettingsContainer = styled(SidebarActionsGroupContainer)`
 `;
 
 const SCPageLogin = styled.div`
-    background-color: ${({ theme }) => theme.colors.background};
+    background-color: ${({ theme }) => theme.colors.background} !important;
     display: flex;
     flex-direction: column;
     align-items: center;

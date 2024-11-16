@@ -29,7 +29,9 @@ const ChatDefaultActionIcon = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-
+    svg{
+        color: ${({ theme }) => theme.colors.text};
+    }
    
 `;
 const SCChatDefaultAction = styled.div<{ $delay: number; }>`
@@ -46,5 +48,6 @@ const SCChatDefaultAction = styled.div<{ $delay: number; }>`
     span{
         font-size: 16px;
         line-height: 22px;
+        color: ${({ theme }) => theme.colors.text};
     }
 `;

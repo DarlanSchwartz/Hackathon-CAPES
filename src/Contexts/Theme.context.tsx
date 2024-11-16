@@ -16,22 +16,19 @@ export const ThemeContext = createContext<ThemeContextProps>({} as ThemeContextP
 /**
  * Context to handle the theme of the application
  */
-export default function ThemeContextProvider({
-    children,
-}: {
-    children?: React.ReactNode;
-}) {
-    const [darkMode, setDarkMode] = useLocalStorage<boolean>(
-        LocalStorageKeys.DARK_MOD_ENABLED,
-        true
-    );
+export default function ThemeContextProvider({ children, }: { children?: React.ReactNode; }) {
+    const [darkMode, setDarkMode] = useLocalStorage<boolean>(LocalStorageKeys.DARK_MOD_ENABLED, true);
     const getCurrentColors = () => (darkMode ? DarkColors : LightColors);
 
     const themes = { fonts: Fonts, colors: getCurrentColors() };
 
     return (
         <ThemeContext.Provider value={{ darkMode, setDarkMode }}>
-            <ThemeProvider theme={themes}>
+            <ThemeProvider theme={{
+                ...themes,
+                darkModeEnabled: darkMode,
+                setDarkModeEnabled: setDarkMode,
+            }}>
                 <ResetStyle />
                 <ToastContainer
                     limit={4}
