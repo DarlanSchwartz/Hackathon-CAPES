@@ -25,25 +25,7 @@ export default class APIProvider implements BaseProvider {
     public debug: boolean;
     onError: (error: AxiosError) => void;
     constructor(onError?: (error: AxiosError) => void) {
-        const currentEnv = import.meta.env.VITE_PROJECT_ENVIRONMENT;
-
-        switch (currentEnv) {
-            case "local":
-                this.baseURL = import.meta.env.VITE_API_URL_LOCAL;
-                break;
-            case "dev":
-                this.baseURL = import.meta.env.VITE_API_URL_DEV;
-                break;
-            case "hml":
-                this.baseURL = import.meta.env.VITE_API_URL_HML;
-                break;
-            case "prod":
-                this.baseURL = import.meta.env.VITE_API_URL_PROD;
-                break;
-            default:
-                this.baseURL = import.meta.env.VITE_API_URL;
-        }
-
+        this.baseURL = import.meta.env.VITE_API_URL;
         this.provider = axios.create({
             baseURL: this.baseURL,
             validateStatus: function (status) {
@@ -52,7 +34,6 @@ export default class APIProvider implements BaseProvider {
             timeoutErrorMessage: "Request timeout",
             timeout: import.meta.env.VITE_APP_API_TIMEOUT,
         });
-        //no caso do token não existir no local storage, o define no provider
         this.provider.interceptors.request.use((config) => {
             const token = LocalStorage.getItem(LocalStorageKeys.TOKEN);
             if (token) {
@@ -78,17 +59,9 @@ export default class APIProvider implements BaseProvider {
         Toaster.notify(error.message, "error");
     }
 
-    public async post<T = unknown, D = unknown>(
-        path: string,
-        data: D,
-        params?: AxiosRequestConfig
-    ) {
+    public async post<T = unknown, D = unknown>(path: string, data: D, params?: AxiosRequestConfig) {
         try {
-            const response = await this.provider.post<ApiResponse<T>>(
-                path,
-                data,
-                params
-            );
+            const response = await this.provider.post<ApiResponse<T>>(path, data, params);
             return this.extractData(response.data);
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -99,11 +72,7 @@ export default class APIProvider implements BaseProvider {
 
     public async put<T = unknown, D = unknown>(path: string, data: D, params?: AxiosRequestConfig) {
         try {
-            const response = await this.provider.put<ApiResponse<T>>(
-                path,
-                data,
-                params
-            );
+            const response = await this.provider.put<ApiResponse<T>>(path, data, params);
             return this.extractData(response.data);
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -114,10 +83,7 @@ export default class APIProvider implements BaseProvider {
 
     public async get<T = unknown>(path: string, params?: AxiosRequestConfig) {
         try {
-            const { data } = await this.provider.get<ApiResponse<T>>(
-                path,
-                params
-            );
+            const { data } = await this.provider.get<ApiResponse<T>>(path, params);
             return this.extractData(data);
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -126,15 +92,9 @@ export default class APIProvider implements BaseProvider {
         }
     }
 
-    public async delete<T = unknown>(
-        path: string,
-        params?: AxiosRequestConfig
-    ) {
+    public async delete<T = unknown>(path: string, params?: AxiosRequestConfig) {
         try {
-            const { data } = await this.provider.delete<ApiResponse<T>>(
-                path,
-                params
-            );
+            const { data } = await this.provider.delete<ApiResponse<T>>(path, params);
             return this.extractData(data);
         } catch (error) {
             if (error instanceof AxiosError) {

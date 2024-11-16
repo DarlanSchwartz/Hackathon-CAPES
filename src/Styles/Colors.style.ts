@@ -9,6 +9,7 @@ export const LightColors = {
     lightPink: "#F7F2FA",
     lightPink2: "#E6E0E9",
     toggleBtnBackground: "#79747E",
+    messageBackground: "#F3F3F3",
 };
 
 export const DarkColors: typeof LightColors = {
@@ -22,4 +23,5 @@ export const DarkColors: typeof LightColors = {
     lightPink: "#F7F2FA",
     lightPink2: "#E6E0E9",
     toggleBtnBackground: "#79747E",
+    messageBackground: "#F3F3F3",
 } as const;

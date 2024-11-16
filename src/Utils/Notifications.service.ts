@@ -10,16 +10,7 @@ import { DEFAULT_TOAST_OPTIONS } from "../Constants/Toast.constant";
  * Toaster.alert('Hello World');
  */
 export default class Toaster {
-    public static notify(
-        message: string,
-        toastType:
-            | "success"
-            | "error"
-            | "info"
-            | "warning"
-            | "dark" = "success",
-        options: ToastOptions = DEFAULT_TOAST_OPTIONS
-    ) {
+    public static notify(message: string, toastType: | "success" | "error" | "info" | "warning" | "dark" = "success", options: ToastOptions = DEFAULT_TOAST_OPTIONS) {
         return toast[toastType](message, options);
     }
 
@@ -29,8 +20,7 @@ export default class Toaster {
             width: 600,
             padding: "3em",
             color: "#716add",
-            background:
-                "#fff url('https://sweetalert2.github.io/images/trees.png')",
+            background: "#fff url('https://sweetalert2.github.io/images/trees.png')",
             backdrop: `
               rgba(0,0,123,0.4)
               url("https://sweetalert2.github.io/images/nyan-cat.gif")

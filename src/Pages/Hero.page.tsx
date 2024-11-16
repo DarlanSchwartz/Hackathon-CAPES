@@ -33,8 +33,10 @@ const HeroImageContainer = styled.div`
     left: 50%;
     transform: translateX(-70%);
     height: 90svh;
+
     flex-shrink: 0;
-    min-width: 1100px;
+    min-width: 1000px;
+    aspect-ratio: 16 / 16;
     pointer-events: none;
 `;
 
