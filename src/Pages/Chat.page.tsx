@@ -27,10 +27,14 @@ export default function PageChat() {
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLInputElement>(null);
     const chatHistoryRef = useRef<HTMLDivElement>(null);
+    const [isAwaitingResponse, setIsAwaitingResponse] = useState(false);
     const theme = useTheme();
-    const { mutate: chat, isPending: isAwaitingResponse } = useMutation({
+    const { mutate: chat } = useMutation({
         mutationKey: ["chat", "talk", textPrompt],
-        mutationFn: () => ChatService.talk(textPrompt),
+        mutationFn: () => {
+            setIsAwaitingResponse(true);
+            return ChatService.talk(textPrompt);
+        },
         onMutate: () => {
             if (browserSupportsSpeechRecognition) {
                 SpeechRecognition.stopListening();
@@ -48,6 +52,7 @@ export default function PageChat() {
         onSettled: () => {
             inputRef.current?.focus();
             scrollToChatBottom();
+            setIsAwaitingResponse(false);
         }
     });
 
