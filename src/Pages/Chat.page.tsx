@@ -16,20 +16,20 @@ import ChatService from "../Services/Chat.service";
 import { ThreeDots } from 'react-loader-spinner';
 import Message from "../Components/Message.component";
 import { ChatRoles } from "../Protocols/Chat.types";
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import Toaster from "../Utils/Notifications.service";
 import { FaRegStopCircle } from "react-icons/fa";
 import { GoMoon } from "react-icons/go";
 import useTypeWriter from "../Hooks/useTypeWriter.hook";
 import Toggle from "../Components/Toggle.component";
 import { ThemeContext } from "../Contexts/Theme.context";
+import { useSpeechRecognition } from "../Hooks/useSpeechRecognition.hook";
 //Refinar o prompt de maquina
 // POssibilitar envio de audio e resposta com adio
 // Possibilitar envio de arquivos de imagem 
 
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
-    const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+    const { transcript, isListening, startListening, stopListening, browserSupportsSpeechRecognition, resetTranscript, interimTranscript } = useSpeechRecognition();
     const [textPrompt, setTextPrompt] = useState<string>("");
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLInputElement>(null);
@@ -46,7 +46,7 @@ export default function PageChat() {
         },
         onMutate: () => {
             if (browserSupportsSpeechRecognition) {
-                SpeechRecognition.stopListening();
+                stopListening();
                 resetTranscript();
             }
             scrollToChatBottom();
@@ -74,14 +74,18 @@ export default function PageChat() {
     }
 
     useEffect(() => {
-        if (browserSupportsSpeechRecognition && !listening && textPrompt !== "") {
-            handleChat();
+        if (browserSupportsSpeechRecognition && textPrompt !== "" && !isAwaitingResponse) {
+            if (interimTranscript === "" && transcript !== "") {
+                handleChat();
+            }
         }
-    }, [listening]);
+    }, [isListening]);
 
     useEffect(() => {
-        setTextPrompt(transcript);
-    }, [transcript]);
+        if (interimTranscript !== "") {
+            setTextPrompt(interimTranscript);
+        }
+    }, [interimTranscript]);
 
     function handleChat(e?: FormEvent) {
         if (e) {
@@ -168,7 +172,7 @@ export default function PageChat() {
                                 disabled={isAwaitingResponse} />
                             <LuImage fontSize={30} style={{ position: "absolute", right: 70, cursor: "pointer" }} onClick={handleChat} />
                             {
-                                listening ?
+                                isListening ?
                                     <FaRegStopCircle
                                         fontSize={30}
                                         style={{ position: "absolute", right: 20, cursor: "pointer" }}
@@ -180,7 +184,7 @@ export default function PageChat() {
                                         onClick={() => {
                                             if (browserSupportsSpeechRecognition) {
                                                 resetTranscript();
-                                                return SpeechRecognition.startListening();
+                                                return startListening();
                                             }
 
                                             return Toaster.alert("Seu navegador não suporta a funcionalidade de reconhecimento de voz.");
