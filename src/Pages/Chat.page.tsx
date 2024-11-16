@@ -19,10 +19,12 @@ import { ChatRoles } from "../Protocols/Chat.types";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import Toaster from "../Utils/Notifications.service";
 import { FaRegStopCircle } from "react-icons/fa";
+import useTypeWriter from "../Hooks/useTypeWriter.hook";
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
     const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
     const [textPrompt, setTextPrompt] = useState<string>("");
+    const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLInputElement>(null);
     const chatHistoryRef = useRef<HTMLDivElement>(null);
     const theme = useTheme();
@@ -49,7 +51,6 @@ export default function PageChat() {
         }
     });
 
-    console.log(chatHistory);
 
     function scrollToChatBottom() {
         chatHistoryRef.current?.scrollTo({
@@ -99,14 +100,14 @@ export default function PageChat() {
                                     (chatHistory.length === 0 || isAwaitingResponse) &&
                                     <>
                                         <section>
-                                            <ChatGreetings>Olá, tudo bem?</ChatGreetings>
+                                            <ChatGreetings>{helloText}</ChatGreetings>
                                             <ChatGreetingsSpan>Como podemos te ajudar hoje?</ChatGreetingsSpan>
                                         </section>
                                         <ChatDefaultActions>
-                                            <ChatDefaultAction text="Faça Upload do seu Artigo e descubra quais periódicos são mais adequados para sua publicação." />
-                                            <ChatDefaultAction text="Procure Periódicos da sua área de atuação" />
-                                            <ChatDefaultAction text="Busque conteúdos sobre Financiamentos  de Pesquisas" />
-                                            <ChatDefaultAction text="Busque informações de currículos acadêmicos por Região, Instituições e Pessoas." />
+                                            <ChatDefaultAction animationDelay={900} text="Faça Upload do seu Artigo e descubra quais periódicos são mais adequados para sua publicação." />
+                                            <ChatDefaultAction animationDelay={1000} text="Procure Periódicos da sua área de atuação" />
+                                            <ChatDefaultAction animationDelay={1100} text="Busque conteúdos sobre Financiamentos  de Pesquisas" />
+                                            <ChatDefaultAction animationDelay={1200} text="Busque informações de currículos acadêmicos por Região, Instituições e Pessoas." />
                                         </ChatDefaultActions>
                                     </>
                                 }
@@ -137,6 +138,7 @@ export default function PageChat() {
                             <input
                                 ref={inputRef}
                                 type="text"
+                                autoFocus
                                 placeholder="Faça sua Pesquisa aqui"
                                 onChange={(e) => setTextPrompt(e.target.value)}
                                 value={textPrompt}
@@ -223,7 +225,9 @@ const ChatGreetingsSpan = styled.span`
     font-size: 47px;
     font-style: normal;
     font-weight: 400;
+    opacity: 0;
     letter-spacing: -0.25px;
+    animation: fadein 1s forwards 800ms;
 `;
 const ChatGreetings = styled.h1`
     font-family: Rubik;

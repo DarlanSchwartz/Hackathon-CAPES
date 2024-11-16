@@ -4,11 +4,12 @@ import { CiGlobe } from "react-icons/ci";
 type ChatDefaultActionProps = {
     text: string;
     action?: () => void;
+    animationDelay?: number;
 };
 
-export default function ChatDefaultAction({ text, action }: ChatDefaultActionProps) {
+export default function ChatDefaultAction({ text, action, animationDelay }: ChatDefaultActionProps) {
     return (
-        <SCChatDefaultAction onClick={action}>
+        <SCChatDefaultAction onClick={action} $delay={animationDelay ?? 0}>
             <span>{text}</span>
             <ChatDefaultActionIcon>
                 <CiGlobe fontSize={20} />
@@ -28,9 +29,12 @@ const ChatDefaultActionIcon = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+
    
 `;
-const SCChatDefaultAction = styled.div`
+const SCChatDefaultAction = styled.div<{ $delay: number; }>`
+    animation: fadein 1s forwards ${({ $delay }) => $delay}ms;
+    opacity: 0;
     width: 100%;
     position: relative;
     display: flex;
