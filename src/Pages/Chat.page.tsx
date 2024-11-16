@@ -10,15 +10,15 @@ import { IoSettingsOutline } from "react-icons/io5";
 import SidebarMenuItem from "../Components/SidebarMenuItem.component";
 import ChatDefaultAction from "../Components/ChatDefaultAction.component";
 import Header from "../Components/Header.component";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import ChatService from "../Services/Chat.service";
 import { ThreeDots } from 'react-loader-spinner';
 import Message from "../Components/Message.component";
 import { ChatRoles } from "../Protocols/Chat.types";
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+// import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import Toaster from "../Utils/Notifications.service";
-import { FaRegStopCircle } from "react-icons/fa";
+// import { FaRegStopCircle } from "react-icons/fa";
 import useTypeWriter from "../Hooks/useTypeWriter.hook";
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
@@ -36,10 +36,10 @@ export default function PageChat() {
             return ChatService.talk(textPrompt);
         },
         onMutate: () => {
-            if (browserSupportsSpeechRecognition) {
-                SpeechRecognition.stopListening();
-                resetTranscript();
-            }
+            // if (browserSupportsSpeechRecognition) {
+            //     SpeechRecognition.stopListening();
+            //     resetTranscript();
+            // }
             scrollToChatBottom();
             setChatHistory(prevChatHistory => [...prevChatHistory, { message: textPrompt, role: ChatRoles.USER }]);
             setTextPrompt("");
