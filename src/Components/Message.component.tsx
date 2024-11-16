@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import styled from "styled-components";
 
 type MessageProps = {
@@ -6,6 +7,42 @@ type MessageProps = {
 };
 
 export default function Message({ role, text }: MessageProps) {
+    function substituirLinks(texto: string): (string | JSX.Element)[] {
+        const regex = /\[(.+?)\]\((https?:\/\/[^\)]+)\)/g; // Captura o formato [Texto](URL)
+        const resultado: (string | JSX.Element)[] = [];
+        let ultimoIndice = 0;
+        let match: RegExpExecArray | null;
+
+        // Itera sobre as ocorrências do padrão no texto
+        while ((match = regex.exec(texto)) !== null) {
+            const textoAntes = texto.slice(ultimoIndice, match.index);
+            const textoLink = match[1]; // O texto entre []
+            const url = match[2]; // A URL entre ()
+
+            // Adiciona o texto antes do link
+            if (textoAntes) {
+                resultado.push(textoAntes);
+            }
+
+            // Adiciona o componente link
+            resultado.push(
+                createElement(
+                    "a",
+                    { href: url, target: "_blank", rel: "noopener noreferrer", key: resultado.length },
+                    textoLink // Renderiza apenas o texto sem os colchetes
+                )
+            );
+
+            ultimoIndice = regex.lastIndex;
+        }
+
+        // Adiciona o texto restante após o último link
+        if (ultimoIndice < texto.length) {
+            resultado.push(texto.slice(ultimoIndice));
+        }
+
+        return resultado;
+    }
     return (
         <SCMessage style={{ alignSelf: role === "system" ? "flex-start" : "flex-end" }}>
             {
@@ -14,7 +51,7 @@ export default function Message({ role, text }: MessageProps) {
                     <img src="/assets/images/capes.png" />
                 </ImageContainer>
             }
-            <p>{text}</p>
+            <p>{substituirLinks(text)}</p>
         </SCMessage>
     );
 }
@@ -24,12 +61,12 @@ const ImageContainer = styled.div`
     height: 50px;
     border-radius: 50%;
     padding: 10px;
+    flex-shrink: 0;
     border: 2px solid ${({ theme }) => theme.colors.purple};
 `;
 
 const SCMessage = styled.div`
     display: flex;
-    align-items: center;
     gap: 10px;
     max-width: 70%;
 
@@ -38,6 +75,8 @@ const SCMessage = styled.div`
         padding: 10px;
         border-radius: 10px;
         width: fit-content;
+        line-height: 25px;
+        white-space: break-spaces;
     }
 
     img{

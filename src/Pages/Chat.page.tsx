@@ -21,22 +21,26 @@ import Toaster from "../Utils/Notifications.service";
 import { FaRegStopCircle } from "react-icons/fa";
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
-    const {
-        transcript,
-        listening,
-        resetTranscript,
-        browserSupportsSpeechRecognition
-    } = useSpeechRecognition();
+    const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
     const [textPrompt, setTextPrompt] = useState<string>("");
     const inputRef = useRef<HTMLInputElement>(null);
     const chatHistoryRef = useRef<HTMLDivElement>(null);
     const theme = useTheme();
     const { mutate: chat, isPending: isAwaitingResponse } = useMutation({
         mutationKey: ["chat", "talk", textPrompt],
-        mutationFn: () => ChatService.talk(inputRef.current?.value ?? ""),
+        mutationFn: () => ChatService.talk(textPrompt),
+        onMutate: () => {
+            if (browserSupportsSpeechRecognition) {
+                SpeechRecognition.stopListening();
+                resetTranscript();
+            }
+            scrollToChatBottom();
+            setChatHistory(prevChatHistory => [...prevChatHistory, { message: textPrompt, role: ChatRoles.USER }]);
+            setTextPrompt("");
+        },
         onSuccess: (response) => {
             if (response) {
-                setChatHistory([...chatHistory, { message: response.message.content, role: ChatRoles.SYSTEM }]);
+                setChatHistory(prevChatHistory => [...prevChatHistory, { message: response.message.content, role: ChatRoles.SYSTEM }]);
             }
         },
         onSettled: () => {
@@ -44,6 +48,8 @@ export default function PageChat() {
             scrollToChatBottom();
         }
     });
+
+    console.log(chatHistory);
 
     function scrollToChatBottom() {
         chatHistoryRef.current?.scrollTo({
@@ -67,14 +73,7 @@ export default function PageChat() {
             e.stopPropagation();
             e.preventDefault();
         }
-        if (browserSupportsSpeechRecognition) {
-            SpeechRecognition.stopListening();
-            resetTranscript();
-        }
-        scrollToChatBottom();
         chat();
-        setTextPrompt("");
-        setChatHistory([...chatHistory, { message: textPrompt, role: ChatRoles.USER }]);
     }
 
     return (
