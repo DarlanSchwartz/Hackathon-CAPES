@@ -22,7 +22,7 @@ import { FaRegStopCircle } from "react-icons/fa";
 import useTypeWriter from "../Hooks/useTypeWriter.hook";
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
-    const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+    // const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
     const [textPrompt, setTextPrompt] = useState<string>("");
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLInputElement>(null);
@@ -64,15 +64,15 @@ export default function PageChat() {
         });
     }
 
-    useEffect(() => {
-        if (browserSupportsSpeechRecognition && !listening && textPrompt !== "") {
-            handleChat();
-        }
-    }, [listening]);
+    // useEffect(() => {
+    //     if (browserSupportsSpeechRecognition && !listening && textPrompt !== "") {
+    //         handleChat();
+    //     }
+    // }, [listening]);
 
-    useEffect(() => {
-        setTextPrompt(transcript);
-    }, [transcript]);
+    // useEffect(() => {
+    //     setTextPrompt(transcript);
+    // }, [transcript]);
 
     function handleChat(e?: FormEvent) {
         if (e) {
@@ -150,23 +150,23 @@ export default function PageChat() {
                                 disabled={isAwaitingResponse} />
                             <LuImage fontSize={30} style={{ position: "absolute", right: 70, cursor: "pointer" }} onClick={handleChat} />
                             {
-                                listening ?
-                                    <FaRegStopCircle
-                                        fontSize={30}
-                                        style={{ position: "absolute", right: 20, cursor: "pointer" }}
-                                        onClick={() => handleChat()} />
-                                    :
-                                    <IoMdMic
-                                        fontSize={30}
-                                        style={{ position: "absolute", right: 20, cursor: "pointer" }}
-                                        onClick={() => {
-                                            if (browserSupportsSpeechRecognition) {
-                                                resetTranscript();
-                                                return SpeechRecognition.startListening();
-                                            }
+                                // listening ?
+                                //     <FaRegStopCircle
+                                //         fontSize={30}
+                                //         style={{ position: "absolute", right: 20, cursor: "pointer" }}
+                                //         onClick={() => handleChat()} />
+                                //     :
+                                <IoMdMic
+                                    fontSize={30}
+                                    style={{ position: "absolute", right: 20, cursor: "pointer" }}
+                                    onClick={() => {
+                                        // if (browserSupportsSpeechRecognition) {
+                                        //     resetTranscript();
+                                        //     return SpeechRecognition.startListening();
+                                        // }
 
-                                            return Toaster.alert("Seu navegador não suporta a funcionalidade de reconhecimento de voz.");
-                                        }} />
+                                        return Toaster.alert("Seu navegador não suporta a funcionalidade de reconhecimento de voz.");
+                                    }} />
                             }
                         </ChatInputContainer>
                     </ChatWindow>

@@ -25,8 +25,8 @@ export default function Header({ sidebarWidth = 0, showAccessibilityToggle, show
                     </AccessibilityContainer>
                 }
                 <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                    <img src="/assets/images/capes.png" alt="" style={{ width: "40px", height: "37px" }} />
-                    <img src="/assets/images/gov.png" alt="" style={{ width: "65px", height: "37px" }} />
+                    <a target="_blank" href="https://www.periodicos.capes.gov.br/"><img src="/assets/images/capes.png" alt="" style={{ width: "40px", height: "37px" }} /></a>
+                    <a target="_blank" href="https://www.gov.br/pt-br"><img src="/assets/images/gov.png" alt="" style={{ width: "65px", height: "37px" }} /></a>
                 </div>
             </HeaderRight>
         </SCHeader>
