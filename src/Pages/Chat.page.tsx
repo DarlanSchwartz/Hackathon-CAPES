@@ -14,6 +14,8 @@ import Sidebar from "../Components/Common/Sidebar.component";
 import ChatLoadingDots from "../Components/Chat/ChatLoadingDots.mini";
 import ChatInput from "../Components/Chat/ChatInput.component";
 import ChatMessagesHistory from "../Components/Chat/ChatMessagesHistory.component";
+import { FaMicrophone } from "react-icons/fa";
+import Logger from "../Services/Logger.service";
 
 // Refinar o prompt de maquina
 
@@ -60,10 +62,12 @@ export default function PageChat() {
         onSuccess: (response) => {
             if (response) {
                 if (accessibilityEnabled) {
+                    Logger.info("Falando: ", response.message.content);
                     speak(response.message.content);
                 }
                 setChatHistory(prevChatHistory => [...prevChatHistory, { message: response.message.content, role: ChatRoles.SYSTEM }]);
             }
+
         },
         onSettled: () => {
             inputRef.current?.focus();
@@ -71,6 +75,13 @@ export default function PageChat() {
             setIsAwaitingResponse(false);
         }
     });
+
+    useEffect(() => {
+        if (accessibilityEnabled) {
+            speak("Olá, tudo bem? Como podemos te ajudar hoje?", startRecordAudio);
+        }
+
+    }, [accessibilityEnabled]);
 
 
     function scrollToChatBottom() {
@@ -131,7 +142,8 @@ export default function PageChat() {
         }
     }
 
-    function onClickRecordAudio() {
+    function startRecordAudio() {
+        if (isAwaitingResponse || isListening) return;
         if (browserSupportsSpeechRecognition) {
             resetTranscript();
             setTextPrompt("");
@@ -157,12 +169,15 @@ export default function PageChat() {
                                             <ChatGreetings>{helloText}</ChatGreetings>
                                             <ChatGreetingsSpan>Como podemos te ajudar hoje?</ChatGreetingsSpan>
                                         </section>
-                                        <ChatDefaultActions>
-                                            <ChatDefaultAction animationDelay={900} text="Faça Upload do seu Artigo e descubra quais periódicos são mais adequados para sua publicação." />
-                                            <ChatDefaultAction animationDelay={1000} text="Procure Periódicos da sua área de atuação" />
-                                            <ChatDefaultAction animationDelay={1100} text="Busque conteúdos sobre Financiamentos  de Pesquisas" />
-                                            <ChatDefaultAction animationDelay={1200} text="Busque informações de currículos acadêmicos por Região, Instituições e Pessoas." />
-                                        </ChatDefaultActions>
+
+                                        {accessibilityEnabled ? null :
+                                            <ChatDefaultActions>
+                                                <ChatDefaultAction animationDelay={900} text="Faça Upload do seu Artigo e descubra quais periódicos são mais adequados para sua publicação." />
+                                                <ChatDefaultAction animationDelay={1000} text="Procure Periódicos da sua área de atuação" />
+                                                <ChatDefaultAction animationDelay={1100} text="Busque conteúdos sobre Financiamentos  de Pesquisas" />
+                                                <ChatDefaultAction animationDelay={1200} text="Busque informações de currículos acadêmicos por Região, Instituições e Pessoas." />
+                                            </ChatDefaultActions>
+                                        }
                                     </>
                                 }
                             </ChatWindowTop>
@@ -171,26 +186,49 @@ export default function PageChat() {
                                 isAwaitingResponse && <ChatLoadingDots />
                             }
                         </ChatHistory>
-                        <ChatInput
-                            onSubmit={handleChat}
-                            inputRef={inputRef}
-                            fileInputImagePreview={fileInputImagePreview}
-                            fileInputRef={fileInputRef}
-                            isAwaitingResponse={isAwaitingResponse}
-                            isListening={isListening}
-                            onClickRecordAudio={onClickRecordAudio}
-                            onClickRemoveImage={clearChatImageInput}
-                            onClickStopRecordAudio={handleChat}
-                            onFileChange={fileChanged}
-                            setTextPrompt={setTextPrompt}
-                            textPrompt={textPrompt}
-                        />
+                        {
+                            !accessibilityEnabled && <ChatInput
+                                onSubmit={handleChat}
+                                inputRef={inputRef}
+                                fileInputImagePreview={fileInputImagePreview}
+                                fileInputRef={fileInputRef}
+                                isAwaitingResponse={isAwaitingResponse}
+                                isListening={isListening}
+                                onClickRecordAudio={startRecordAudio}
+                                onClickRemoveImage={clearChatImageInput}
+                                onClickStopRecordAudio={handleChat}
+                                onFileChange={fileChanged}
+                                setTextPrompt={setTextPrompt}
+                                textPrompt={textPrompt}
+                            />
+                        }
+                        {
+                            accessibilityEnabled &&
+                            <MicAccessibilityContainer style={{ animation: interimTranscript ? "scale_up_down 1s infinite" : "auto" }}>
+                                <FaMicrophone fontSize={60} color="#fff" onClick={startRecordAudio} />
+                            </MicAccessibilityContainer>
+                        }
                     </ChatWindow>
                 </ChatWindowContainer>
             </SCPageLogin>
         </PageDefaultSkeleton>
     );
 }
+
+const MicAccessibilityContainer = styled.div`
+    display: flex;
+    width: 136px;
+    height: 136px;
+    padding: 36.661px;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #AF52DE;
+    align-self: center;
+    margin-bottom: 100px;
+`;
+
 const ChatHistory = styled.div`
     display: flex;
     flex-direction: column;

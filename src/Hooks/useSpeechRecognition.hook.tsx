@@ -50,7 +50,6 @@ export function useSpeechRecognition({ onSilence }: { onSilence: () => void; }) 
         }
     }
 
-
     function resetTranscript() {
         stopListening();
         setTranscript("");

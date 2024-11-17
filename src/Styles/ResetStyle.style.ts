@@ -102,6 +102,17 @@ html, body, span, applet, object, iframe,
 			opacity: 1;
 		}
   	}
+
+	@keyframes scale_up_down {
+		0%, 100% {
+			transform: scale(1);
+			opacity: 0.8;
+		}
+		50% {
+			transform: scale(1.05);
+			opacity: 1;
+		}
+	}
 `;
 
 export default ResetStyle;
