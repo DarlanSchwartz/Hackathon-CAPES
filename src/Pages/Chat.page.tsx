@@ -16,6 +16,7 @@ import ChatInput from "../Components/Chat/ChatInput.component";
 import ChatMessagesHistory from "../Components/Chat/ChatMessagesHistory.component";
 import { FaMicrophone } from "react-icons/fa";
 import Logger from "../Services/Logger.service";
+import { useSpeech } from "react-text-to-speech";
 
 // Refinar o prompt de maquina
 
@@ -35,7 +36,21 @@ export default function PageChat() {
             handleChat();
         }, 200);
     }
-    const { accessibilityEnabled, speak, endSpeech } = useContext(AccessibilityContext);
+    const { accessibilityEnabled, endSpeech } = useContext(AccessibilityContext);
+    const [speechText, setSpeechText] = useState<string>("Olá, tudo bem? Como podemos te ajudar hoje?");
+    const {
+        start, // Function to start the speech or put it in queue
+        stop, // Function to stop the speech or remove it from queue
+    } = useSpeech({
+        text: speechText,
+        voiceURI: "Google português do Brasil",
+        lang: "pt-BR",
+        onStop: () => {
+            if (!isListening && browserSupportsSpeechRecognition) {
+                startRecordAudio();
+            }
+        }
+    });
     const fileInputRef = useRef<HTMLInputElement>(null);
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -46,6 +61,9 @@ export default function PageChat() {
     const [fileInputImagePreview, setFileInputImagePreview] = useState<string | null>(null);
     const [fileInputImageFile, setFileInputImageFile] = useState<File | null>(null);
 
+    function removeMarkdown(text: string): string {
+        return text.replace(/[#_*~`>\[\](){}\-!+\\|\n]/g, '');
+    }
     const { mutate: chat } = useMutation({
         mutationKey: ["chat", "talk", transcript],
         mutationFn: () => {
@@ -62,8 +80,9 @@ export default function PageChat() {
         onSuccess: (response) => {
             if (response) {
                 if (accessibilityEnabled) {
-                    Logger.info("Falando: ", response.message.content);
-                    speak(response.message.content);
+                    Logger.info("Falando: ", removeMarkdown(response.message.content));
+                    setSpeechText(removeMarkdown(response.message.content));
+
                 }
                 setChatHistory(prevChatHistory => [...prevChatHistory, { message: response.message.content, role: ChatRoles.SYSTEM }]);
             }
@@ -78,10 +97,14 @@ export default function PageChat() {
 
     useEffect(() => {
         if (accessibilityEnabled) {
-            speak("Olá, tudo bem? Como podemos te ajudar hoje?", startRecordAudio);
+            start();
         }
 
     }, [accessibilityEnabled]);
+
+    useEffect(() => {
+        start();
+    }, [speechText]);
 
 
     function scrollToChatBottom() {
@@ -147,6 +170,7 @@ export default function PageChat() {
         if (browserSupportsSpeechRecognition) {
             resetTranscript();
             setTextPrompt("");
+            stop();
             return startListening();
         }
         return Toaster.alert("Seu navegador não suporta a funcionalidade de reconhecimento de voz.");

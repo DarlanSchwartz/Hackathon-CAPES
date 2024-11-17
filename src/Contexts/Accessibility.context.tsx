@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createContext } from "react";
 import Logger from "../Services/Logger.service";
+import { useSpeech } from "react-text-to-speech";
 
 type AccessibilityContextProps = {
     accessibilityEnabled: boolean;
@@ -17,34 +18,24 @@ export function AccessibilityProvider({ children }: { children?: React.ReactNode
     const speechSynthesis = "speechSynthesis" in window ? window.speechSynthesis : null;
     const voices = speechSynthesis?.getVoices();
     const accessibilityActiveVoice = voices?.find(voice => voice.lang === "pt-BR") ?? voices?.[0];
+
+
+
     function speak(text: string, onEndSpeech?: () => void) {
+
         if (speechSynthesis && text && accessibilityActiveVoice) {
-            function removeMarkdown(text: string): string {
-                return text.replace(/[#_*~`>\[\](){}\-!+\\|]/g, '');
-            }
-            const utterance = new SpeechSynthesisUtterance(removeMarkdown(text));
+            const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = accessibilityActiveVoice;
-            utterance.lang = "pt-BR";
+            speechSynthesis.cancel();
             if (onEndSpeech) {
-                utterance.onend = () => {
-                    onEndSpeech();
-                    speechSynthesis.cancel();
-                };
+                utterance.onend = onEndSpeech;
             }
-            else {
-                utterance.onend = () => {
-                    Logger.info("Speech ended", utterance);
-                    speechSynthesis.cancel();
-                };
-            }
-
-            Logger.info("Speaking", utterance);
-            speechSynthesis.speak(utterance);
-            utterance.onerror = (error) => {
-                Logger.error("Error speaking", error);
-            };
-
+            return speechSynthesis.speak(utterance);
         }
+
+
+
+        return Logger.error("Error speaking", "SpeechSynthesis not available");
     }
 
     function endSpeech() {

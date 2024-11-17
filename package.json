@@ -26,6 +26,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-markdown": "^9.0.1",
     "react-router-dom": "6.27.0",
+    "react-text-to-speech": "^0.19.5",
     "react-toastify": "10.0.6",
     "styled-components": "6.1.13",
     "sweetalert2": "11.14.4",
