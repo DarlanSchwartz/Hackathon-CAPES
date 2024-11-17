@@ -5,7 +5,7 @@ type AccessibilityContextProps = {
     accessibilityEnabled: boolean;
     setAccessibilityEnabled: (value: boolean) => void;
     accessibilityActiveVoice?: SpeechSynthesisVoice;
-    speechSynthesis?: SpeechSynthesis;
+    speechSynthesis?: SpeechSynthesis | null;
     speak: (text: string) => void;
     endSpeech: () => void;
 };
@@ -13,9 +13,9 @@ export const AccessibilityContext = createContext<AccessibilityContextProps>({} 
 
 export function AccessibilityProvider({ children, }: { children?: React.ReactNode; }) {
     const [accessibilityEnabled, setAccessibilityEnabled] = useState<boolean>(false);
-    const speechSynthesis = window.speechSynthesis;
-    const voices = speechSynthesis.getVoices();
-    const accessibilityActiveVoice = voices.find(voice => voice.lang === "pt-BR") ?? voices[0];
+    const speechSynthesis = "speechSynthesis" in window ? window.speechSynthesis : null;
+    const voices = speechSynthesis?.getVoices();
+    const accessibilityActiveVoice = voices?.find(voice => voice.lang === "pt-BR") ?? voices?.[0];
     function speak(text: string) {
         if (speechSynthesis && text && accessibilityActiveVoice) {
             const utterance = new SpeechSynthesisUtterance(text);

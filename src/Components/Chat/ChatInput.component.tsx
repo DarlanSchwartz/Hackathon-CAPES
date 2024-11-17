@@ -83,7 +83,6 @@ const InputButton = styled.button`
     background: 0;
     border: 0;
     cursor: pointer;
-    color: black;
     padding: 10px;
 `;
 const ImageFilePreviewContainer = styled.div`
