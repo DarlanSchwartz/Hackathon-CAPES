@@ -1,5 +1,5 @@
-import { createElement } from "react";
 import styled from "styled-components";
+import ReactMarkdown from "react-markdown";
 
 type MessageProps = {
     text: string;
@@ -7,35 +7,7 @@ type MessageProps = {
 };
 
 export default function ChatMessage({ role, text }: MessageProps) {
-    function substituirLinks(texto: string): (string | JSX.Element)[] {
-        const regex = /\[(.+?)\]\((https?:\/\/[^\)]+)\)/g;
-        const resultado: (string | JSX.Element)[] = [];
-        let ultimoIndice = 0;
-        let match: RegExpExecArray | null;
-
-        while ((match = regex.exec(texto)) !== null) {
-            const textoAntes = texto.slice(ultimoIndice, match.index);
-            const textoLink = match[1];
-            const url = match[2];
-
-
-            if (textoAntes) {
-                resultado.push(textoAntes);
-            }
-
-            resultado.push(
-                createElement("a", { href: url, target: "_blank", rel: "noopener noreferrer", key: resultado.length }, textoLink)
-            );
-
-            ultimoIndice = regex.lastIndex;
-        }
-
-        if (ultimoIndice < texto.length) {
-            resultado.push(texto.slice(ultimoIndice));
-        }
-
-        return resultado;
-    }
+    if (!text) return null;
     return (
         <SCMessage style={{ alignSelf: role === "system" ? "flex-start" : "flex-end" }}>
             {
@@ -44,7 +16,7 @@ export default function ChatMessage({ role, text }: MessageProps) {
                     <img src="/assets/images/capes.png" />
                 </ImageContainer>
             }
-            <p>{substituirLinks(text)}</p>
+            <section>{<ReactMarkdown>{text}</ReactMarkdown>}</section>
         </SCMessage>
     );
 }
@@ -63,7 +35,7 @@ const SCMessage = styled.div`
     gap: 10px;
     max-width: 70%;
 
-    p{
+    section{
         background-color: ${({ theme }) => theme.colors.messageBackground};
         padding: 10px;
         border-radius: 10px;
@@ -71,6 +43,31 @@ const SCMessage = styled.div`
         line-height: 25px;
         white-space: break-spaces;
         color: ${({ theme }) => theme.colors.text};
+        a{
+            color:#7cacf8;
+            text-decoration: underline;
+        }
+        h1,h2,h3,h4,h5,h6,strong{
+            font-weight: 600;
+        }
+        h1{
+            font-size: 24px;
+        }
+        h2{
+            font-size: 22px;
+        }
+        h3{
+            font-size: 20px;
+        }
+        h4{
+            font-size: 18px;
+        }
+        h5{
+            font-size: 16px;
+        }
+        h6{
+            font-size: 14px;
+        }
     }
 
     img{

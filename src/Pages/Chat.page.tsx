@@ -18,7 +18,6 @@ import ChatMessagesHistory from "../Components/Chat/ChatMessagesHistory.componen
 // Refinar o prompt de maquina
 
 export default function PageChat() {
-    const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
     const {
         transcript,
         isListening,
@@ -27,27 +26,33 @@ export default function PageChat() {
         browserSupportsSpeechRecognition,
         resetTranscript,
         interimTranscript
-    } = useSpeechRecognition({ onSilence: () => handleChat() });
+    } = useSpeechRecognition({ onSilence });
+
+    function onSilence() {
+        setTimeout(() => {
+            handleChat();
+        }, 200);
+    }
     const { accessibilityEnabled, speak, endSpeech } = useContext(AccessibilityContext);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const chatHistoryRef = useRef<HTMLDivElement>(null);
+    const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
     const [textPrompt, setTextPrompt] = useState<string>("");
     const [isAwaitingResponse, setIsAwaitingResponse] = useState(false);
     const [fileInputImagePreview, setFileInputImagePreview] = useState<string | null>(null);
     const [fileInputImageFile, setFileInputImageFile] = useState<File | null>(null);
+
     const { mutate: chat } = useMutation({
-        mutationKey: ["chat", "talk", textPrompt],
+        mutationKey: ["chat", "talk", transcript],
         mutationFn: () => {
             setIsAwaitingResponse(true);
-            return ChatService.talk(textPrompt, fileInputImageFile);
+            if (!transcript) throw new Error("Nenhum texto foi detectado.");
+            resetTranscript();
+            return ChatService.talk(transcript, fileInputImageFile);
         },
         onMutate: () => {
-            if (browserSupportsSpeechRecognition) {
-                stopListening();
-                resetTranscript();
-            }
             scrollToChatBottom();
             setChatHistory(prevChatHistory => [...prevChatHistory, { message: textPrompt, role: ChatRoles.USER }]);
             setTextPrompt("");
@@ -75,25 +80,23 @@ export default function PageChat() {
         });
     }
 
-    useEffect(() => {
-        if (browserSupportsSpeechRecognition && textPrompt !== "" && !isAwaitingResponse) {
-            if (interimTranscript === "" && transcript !== "") {
-                handleChat();
-            }
-        }
-    }, [isListening]);
 
     useEffect(() => {
+        if (transcript !== "") {
+            setTextPrompt(transcript);
+            return;
+        }
         if (interimTranscript !== "") {
             setTextPrompt(interimTranscript);
         }
-    }, [interimTranscript]);
+    }, [interimTranscript, transcript]);
 
     function handleChat(e?: FormEvent) {
         if (e) {
             e?.stopPropagation();
             e?.preventDefault();
         }
+
 
         setTimeout(() => {
             scrollToChatBottom();
@@ -131,10 +134,11 @@ export default function PageChat() {
     function onClickRecordAudio() {
         if (browserSupportsSpeechRecognition) {
             resetTranscript();
+            setTextPrompt("");
             return startListening();
         }
-
         return Toaster.alert("Seu navegador não suporta a funcionalidade de reconhecimento de voz.");
+
     }
 
     return (
@@ -147,7 +151,7 @@ export default function PageChat() {
                         <ChatHistory ref={chatHistoryRef}>
                             <ChatWindowTop>
                                 {
-                                    (chatHistory.length === 0 || isAwaitingResponse) &&
+                                    (chatHistory.length === 0) &&
                                     <>
                                         <section>
                                             <ChatGreetings>{helloText}</ChatGreetings>

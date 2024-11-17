@@ -38,11 +38,7 @@ export function useSpeechRecognition({ onSilence }: { onSilence: () => void; }) 
                 if (silenceTimeout) {
                     clearTimeout(silenceTimeout);
                 }
-                silenceTimeout = setTimeout(() => {
-                    onSilence();
-                }, 1000);
-
-
+                silenceTimeout = setTimeout(() => onSilence(), 1500);
             };
         }
     }, []);
@@ -56,12 +52,12 @@ export function useSpeechRecognition({ onSilence }: { onSilence: () => void; }) 
 
 
     function resetTranscript() {
+        stopListening();
         setTranscript("");
         setInterimTranscript("");
     }
 
     function stopListening() {
-        console.log("stopListening");
         setIsListening(false);
         if (recognition) {
             recognition.stop();
