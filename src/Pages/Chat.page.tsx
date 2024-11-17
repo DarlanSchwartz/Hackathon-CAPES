@@ -18,7 +18,6 @@ import { AccessibilityContext } from "../Contexts/Accessibility.context";
 import Sidebar from "../Components/Sidebar.component";
 
 // Refinar o prompt de maquina
-// Resposta com audio
 // Possibilitar envio de arquivos de imagem
 
 export default function PageChat() {
@@ -33,18 +32,20 @@ export default function PageChat() {
         interimTranscript
     } = useSpeechRecognition({ onSilence: () => handleChat() });
     const { accessibilityEnabled, speak, endSpeech } = useContext(AccessibilityContext);
-    const [textPrompt, setTextPrompt] = useState<string>("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
     const chatHistoryRef = useRef<HTMLDivElement>(null);
-
+    const [textPrompt, setTextPrompt] = useState<string>("");
     const [isAwaitingResponse, setIsAwaitingResponse] = useState(false);
+    const [fileInputImagePreview, setFileInputImagePreview] = useState<string | null>(null);
+    const [fileInputImageFile, setFileInputImageFile] = useState<File | null>(null);
     const theme = useTheme();
     const { mutate: chat } = useMutation({
         mutationKey: ["chat", "talk", textPrompt],
         mutationFn: () => {
             setIsAwaitingResponse(true);
-            return ChatService.talk(textPrompt);
+            return ChatService.talk(textPrompt, fileInputImageFile);
         },
         onMutate: () => {
             if (browserSupportsSpeechRecognition) {
@@ -105,6 +106,40 @@ export default function PageChat() {
         chat();
     }
 
+    function fileChanged() {
+        if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length > 0) {
+            const selectedFile = fileInputRef.current.files[0];
+            const allowedExtensions = [".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tif", ".webp"];
+
+            if (allowedExtensions.some(extension => selectedFile.name.toLowerCase().endsWith(extension))) {
+                setFileInputImagePreview(URL.createObjectURL(selectedFile));
+                setFileInputImageFile(selectedFile);
+                fileInputRef.current.value = "";
+            } else {
+                setFileInputImagePreview(null);
+                setFileInputImageFile(null);
+                Toaster.alert("Formato de arquivo inválido. Por favor, selecione uma imagem.");
+            }
+        }
+    }
+
+    function clearChatImageInput() {
+        setFileInputImagePreview(null);
+        setFileInputImageFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.files = null;
+        }
+    }
+
+    function onClickRecordAudio() {
+        if (browserSupportsSpeechRecognition) {
+            resetTranscript();
+            return startListening();
+        }
+
+        return Toaster.alert("Seu navegador não suporta a funcionalidade de reconhecimento de voz.");
+    }
+
     return (
         <PageDefaultSkeleton>
             <SCPageLogin >
@@ -152,33 +187,32 @@ export default function PageChat() {
                             }
                         </ChatHistory>
                         <ChatInputContainer onSubmit={handleChat} style={{ opacity: isAwaitingResponse ? 0.5 : 1 }}>
-                            <input
+                            <input ref={fileInputRef} type="file" style={{ opacity: 0, width: 0, height: 0 }} accept="image/*" onChange={fileChanged} />
+                            {
+                                fileInputImagePreview &&
+                                <ImageFilePreviewContainer>
+                                    <button onClick={clearChatImageInput}>X</button>
+                                    <ImageFile src={fileInputImagePreview} />
+                                </ImageFilePreviewContainer>}
+                            <textarea
                                 ref={inputRef}
-                                type="text"
                                 autoFocus
                                 placeholder="Faça sua Pesquisa aqui"
                                 onChange={(e) => setTextPrompt(e.target.value)}
                                 value={textPrompt}
                                 disabled={isAwaitingResponse} />
-                            <LuImage fontSize={30} style={{ position: "absolute", right: 70, cursor: "pointer" }} onClick={handleChat} />
+                            <InputButton onClick={() => { if (fileInputRef) fileInputRef.current?.click(); }} style={{ position: "absolute", right: 70, bottom: -25, transform: "translateY(-50%)", cursor: "pointer" }}>
+                                <LuImage fontSize={30} />
+                            </InputButton>
                             {
                                 isListening ?
-                                    <FaRegStopCircle
-                                        fontSize={30}
-                                        style={{ position: "absolute", right: 20, cursor: "pointer" }}
-                                        onClick={() => handleChat()} />
+                                    <InputButton onClick={handleChat} style={{ position: "absolute", right: 20, cursor: "pointer", bottom: -25, transform: "translateY(-50%)", }}>
+                                        <FaRegStopCircle fontSize={30} />
+                                    </InputButton>
                                     :
-                                    <IoMdMic
-                                        fontSize={30}
-                                        style={{ position: "absolute", right: 20, cursor: "pointer" }}
-                                        onClick={() => {
-                                            if (browserSupportsSpeechRecognition) {
-                                                resetTranscript();
-                                                return startListening();
-                                            }
-
-                                            return Toaster.alert("Seu navegador não suporta a funcionalidade de reconhecimento de voz.");
-                                        }} />
+                                    <InputButton onClick={onClickRecordAudio} style={{ position: "absolute", right: 20, cursor: "pointer", bottom: -25, transform: "translateY(-50%)", }} >
+                                        <IoMdMic fontSize={30} />
+                                    </InputButton>
                             }
                         </ChatInputContainer>
                     </ChatWindow>
@@ -187,8 +221,48 @@ export default function PageChat() {
         </PageDefaultSkeleton>
     );
 }
+const InputButton = styled.button`
+    background: 0;
+    border: 0;
+    cursor: pointer;
+    color: black;
+    padding: 10px;
+`;
+const ImageFilePreviewContainer = styled.div`
+    position: absolute;
+    left: 40px;
+    top: -60px;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
 
-
+    button{
+        position: absolute;
+        right: -10px;
+        top: -10px;
+        color: ${({ theme }) => theme.colors.text};
+        background-color: ${({ theme }) => theme.colors.messageBackground};
+        border-radius: 50%;
+        padding: 5px;
+        height: 20px;
+        width: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border: 0;
+        font-size: 12px;
+        &:hover{
+            border: 1px solid ${({ theme }) => theme.colors.text};
+        }
+    }
+`;
+const ImageFile = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+`;
 const ChatHistory = styled.div`
     display: flex;
     flex-direction: column;
@@ -215,19 +289,28 @@ const ChatInputContainer = styled.form`
         color: ${({ theme }) => theme.colors.text};
         cursor: pointer;
     }
-    input{
+    textarea{
         width: 100%;
+        padding-left: 20px;
+        padding-right: 40px;
+        padding-top: 15px;
         border-radius: 28px;
         height: 56px;
         background: ${({ theme }) => theme.colors.lightPink2};
         border: 0;
-        padding-left: 20px;
         font-size: 16px;
         font-style: normal;
         font-weight: 400;
         line-height: 24px; /* 150% */
         letter-spacing: 0.5px;
         color:  ${({ theme }) => theme.colors.text};
+        resize: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        &:focus{
+            outline: 1px solid ${({ theme }) => theme.colors.purple};
+        }
     }
 `;
 const ChatDefaultActions = styled.div`
