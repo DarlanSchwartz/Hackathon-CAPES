@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import SidebarMenuItem from "../SidebarMenuItem.component";
+import SidebarMenuItem from "./SidebarMenuItem.component";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { GoClock, GoMoon } from "react-icons/go";
 import { HiPlus } from "react-icons/hi";

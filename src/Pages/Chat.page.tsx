@@ -1,21 +1,19 @@
 import styled from "styled-components";
-import { LuImage } from "react-icons/lu";
-import { IoMdMic } from "react-icons/io";
 import PageDefaultSkeleton from "./DefaultSkeleton.page";
 import ChatDefaultAction from "../Components/Chat/ChatDefaultAction.component";
 import Header from "../Components/Common/Header.component";
 import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import ChatService from "../Services/Chat.service";
-import ChatMessage from "../Components/Chat/ChatMessage.component";
 import { ChatRoles } from "../Protocols/Chat.types";
 import Toaster from "../Utils/Notifications.service";
-import { FaRegStopCircle } from "react-icons/fa";
 import useTypeWriter from "../Hooks/useTypeWriter.hook";
 import { useSpeechRecognition } from "../Hooks/useSpeechRecognition.hook";
 import { AccessibilityContext } from "../Contexts/Accessibility.context";
 import Sidebar from "../Components/Common/Sidebar.component";
 import ChatLoadingDots from "../Components/Chat/ChatLoadingDots.mini";
+import ChatInput from "../Components/Chat/ChatInput.component";
+import ChatMessagesHistory from "../Components/Chat/ChatMessagesHistory.component";
 
 // Refinar o prompt de maquina
 
@@ -163,93 +161,31 @@ export default function PageChat() {
                                     </>
                                 }
                             </ChatWindowTop>
-                            {
-                                chatHistory.map((messageData, index) => (
-                                    <ChatMessage key={index} role={messageData.role} text={messageData.message} />
-                                ))
-                            }
+                            <ChatMessagesHistory data={chatHistory} />
                             {
                                 isAwaitingResponse && <ChatLoadingDots />
-
                             }
                         </ChatHistory>
-                        <ChatInputContainer onSubmit={handleChat} style={{ opacity: isAwaitingResponse ? 0.5 : 1 }}>
-                            <input ref={fileInputRef} type="file" style={{ opacity: 0, width: 0, height: 0 }} accept="image/*" onChange={fileChanged} />
-                            {
-                                fileInputImagePreview &&
-                                <ImageFilePreviewContainer>
-                                    <button onClick={clearChatImageInput}>X</button>
-                                    <ImageFile src={fileInputImagePreview} />
-                                </ImageFilePreviewContainer>}
-                            <textarea
-                                ref={inputRef}
-                                autoFocus
-                                placeholder="Faça sua Pesquisa aqui"
-                                onChange={(e) => setTextPrompt(e.target.value)}
-                                value={textPrompt}
-                                disabled={isAwaitingResponse} />
-                            <InputButton onClick={() => { if (fileInputRef) fileInputRef.current?.click(); }} style={{ position: "absolute", right: 70, bottom: -25, transform: "translateY(-50%)", cursor: "pointer" }}>
-                                <LuImage fontSize={30} />
-                            </InputButton>
-                            {
-                                isListening ?
-                                    <InputButton onClick={handleChat} style={{ position: "absolute", right: 20, cursor: "pointer", bottom: -25, transform: "translateY(-50%)", }}>
-                                        <FaRegStopCircle fontSize={30} />
-                                    </InputButton>
-                                    :
-                                    <InputButton onClick={onClickRecordAudio} style={{ position: "absolute", right: 20, cursor: "pointer", bottom: -25, transform: "translateY(-50%)", }} >
-                                        <IoMdMic fontSize={30} />
-                                    </InputButton>
-                            }
-                        </ChatInputContainer>
+                        <ChatInput
+                            onSubmit={handleChat}
+                            inputRef={inputRef}
+                            fileInputImagePreview={fileInputImagePreview}
+                            fileInputRef={fileInputRef}
+                            isAwaitingResponse={isAwaitingResponse}
+                            isListening={isListening}
+                            onClickRecordAudio={onClickRecordAudio}
+                            onClickRemoveImage={clearChatImageInput}
+                            onClickStopRecordAudio={handleChat}
+                            onFileChange={fileChanged}
+                            setTextPrompt={setTextPrompt}
+                            textPrompt={textPrompt}
+                        />
                     </ChatWindow>
                 </ChatWindowContainer>
             </SCPageLogin>
         </PageDefaultSkeleton>
     );
 }
-const InputButton = styled.button`
-    background: 0;
-    border: 0;
-    cursor: pointer;
-    color: black;
-    padding: 10px;
-`;
-const ImageFilePreviewContainer = styled.div`
-    position: absolute;
-    left: 40px;
-    top: -60px;
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-
-    button{
-        position: absolute;
-        right: -10px;
-        top: -10px;
-        color: ${({ theme }) => theme.colors.text};
-        background-color: ${({ theme }) => theme.colors.messageBackground};
-        border-radius: 50%;
-        padding: 5px;
-        height: 20px;
-        width: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        border: 0;
-        font-size: 12px;
-        &:hover{
-            border: 1px solid ${({ theme }) => theme.colors.text};
-        }
-    }
-`;
-const ImageFile = styled.img`
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-`;
 const ChatHistory = styled.div`
     display: flex;
     flex-direction: column;
@@ -263,43 +199,8 @@ const ChatWindowTop = styled.div`
     display: flex;
     flex-direction: column;
     gap: 20px;
-   
 `;
 
-const ChatInputContainer = styled.form`
-    display: flex;
-    align-items: center;
-    width: 100%;
-    position: relative;
-    justify-self: flex-end;
-    svg{
-        color: ${({ theme }) => theme.colors.text};
-        cursor: pointer;
-    }
-    textarea{
-        width: 100%;
-        padding-left: 20px;
-        padding-right: 40px;
-        padding-top: 15px;
-        border-radius: 28px;
-        height: 56px;
-        background: ${({ theme }) => theme.colors.lightPink2};
-        border: 0;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 24px; /* 150% */
-        letter-spacing: 0.5px;
-        color:  ${({ theme }) => theme.colors.text};
-        resize: none;
-        &::-webkit-scrollbar {
-            display: none;
-        }
-        &:focus{
-            outline: 1px solid ${({ theme }) => theme.colors.purple};
-        }
-    }
-`;
 const ChatDefaultActions = styled.div`
     display: flex;
     width: 100%;
