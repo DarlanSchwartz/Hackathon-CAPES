@@ -68,7 +68,8 @@ export default function PageChat() {
         mutationKey: ["chat", "talk", transcript],
         mutationFn: () => {
             setIsAwaitingResponse(true);
-            if (!transcript) throw new Error("Nenhum texto foi detectado.");
+
+            //if ((!transcript && accessibilityEnabled) || (!accessibilityEnabled && !textPrompt)) throw new Error("Nenhum texto foi detectado.");
             resetTranscript();
             return ChatService.talk(transcript, fileInputImageFile);
         },
