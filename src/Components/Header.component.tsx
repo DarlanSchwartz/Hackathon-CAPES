@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Toggle from "./Toggle.component";
 import { useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 type HeaderProps = {
     sidebarWidth?: number;
@@ -11,6 +12,7 @@ type HeaderProps = {
 
 export default function Header({ sidebarWidth = 0, showAccessibilityToggle, showChatSelector }: HeaderProps) {
     const [accessibility, setAccessibility] = useState(false);
+    const size = useWindowSize();
     return (
         <SCHeader style={{ width: `calc(100% - ${sidebarWidth}px)` }}>
             {
@@ -20,7 +22,9 @@ export default function Header({ sidebarWidth = 0, showAccessibilityToggle, show
                 {
                     showAccessibilityToggle &&
                     <AccessibilityContainer>
-                        Acessibilidade: Deficiência Visual
+                        {
+                            !!size.width && size.width < 500 ? "Deficiência Visual" : " Acessibilidade: Deficiência Visual"
+                        }
                         <Toggle value={accessibility} setValue={setAccessibility} />
                     </AccessibilityContainer>
                 }
@@ -53,9 +57,15 @@ const SCHeader = styled.header`
     right: 0;
     h1{
         color: ${({ theme }) => theme.colors.headerText};
+        @media (max-width: 500px) {
+            display: none;
+        }
     }
     display: flex;
     align-items: center;
     flex-direction: row;
     justify-content: space-between;
+    @media (max-width: 500px) {
+        width: 100% !important;
+    }
 `;

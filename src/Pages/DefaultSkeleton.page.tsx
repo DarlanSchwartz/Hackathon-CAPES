@@ -18,6 +18,6 @@ const SCPageDefaultSkeleton = styled.div<{ $isInLoginPage?: boolean; }>`
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: ${({ $isInLoginPage }) => $isInLoginPage ? "unset" : "0 0 10px 23px"};
+   
     background-color: ${({ theme }) => theme.colors.background} !important;
 `;

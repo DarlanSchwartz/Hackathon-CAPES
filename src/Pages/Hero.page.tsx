@@ -5,6 +5,9 @@ import Header from "../Components/Header.component";
 
 export default function PageHero() {
     const navigate = useNavigate();
+    function openTelegramChat() {
+        window.open("https://t.me/AtenaIABot", "_blank");
+    }
     return (
         <PageDefaultSkeleton>
             <Header />
@@ -19,7 +22,7 @@ export default function PageHero() {
                         Atena é uma inteligência artificial avançada projetada para transformar a experiência de pesquisa acadêmica no Portal de Periódicos da CAPES. Inspirada na deusa da sabedoria, Atena combina inovação tecnológica, inteligência artificial e automação para oferecer suporte completo a pesquisadores em todas as etapas de produção, análise e publicação de conhecimento científico.
                     </Introduction>
                     <Button onClick={() => navigate("/chat")}>Conversar no Desktop</Button>
-                    <ButtonWPP>Conversar no Telegram</ButtonWPP>
+                    <ButtonWPP onClick={openTelegramChat}>Conversar no Telegram</ButtonWPP>
                 </CallToAction>
             </SCPageLogin>
         </PageDefaultSkeleton>
@@ -50,6 +53,20 @@ const CallToAction = styled.div`
     right: 140px;
     width: 498px;
     height: 280px;
+    @media (max-width: 500px) {
+        z-index: 10;
+        position: absolute;
+        right: 0;
+        left: 50%;
+        gap: 30px;
+        transform: translateX(-50%);
+        padding: 0 20px;
+        p{
+            font-size: 15px;
+            width: 100%;
+            max-width: 70%;
+        }
+   }
 `;
 
 const HeroBackground = styled.img`
@@ -61,12 +78,23 @@ const HeroBackground = styled.img`
     min-height: 1024px;
     pointer-events: none;
     z-index: -1;
+    @media (max-width: 500px) {
+        height: 50svh;
+        min-height: 768px;
+    }
 `;
 const HeroImage = styled.img`
     width: 100%;
     height: 100%;
     flex-shrink: 0;
     pointer-events: none;
+    @media (max-width: 500px) {
+        left: 0%;
+        bottom: 0;
+        z-index: 10;
+        position: absolute;
+        opacity: 0.5;
+    }
 `;
 
 const Button = styled.button`
@@ -85,9 +113,18 @@ const Button = styled.button`
     line-height: 24.575px; /* 142.857% */
     letter-spacing: 0.123px;
     flex-shrink: 0;
+    border: 0;
+    &:hover {
+        opacity: 0.8;
+    }
+    @media (max-width: 500px) {
+        width: 80%;
+        max-width: 80%;
+    }
 `;
 
 const ButtonWPP = styled(Button)`
+    border: 2px solid ${({ theme }) => theme.colors.wppGreen};
     background-color: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.wppGreen};
 `;
@@ -98,6 +135,13 @@ const SCPageLogin = styled.div`
     flex-direction: column;
     align-items: center;
     padding: 140px 140px;
+    @media (max-width: 500px) {
+       *{
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+       }
+    }
 `;
 
 const Title = styled.h1`
@@ -114,7 +158,11 @@ const Title = styled.h1`
     z-index: -1;
     left: 35%;
     white-space: nowrap;
-
+    @media (max-width: 500px) {
+        font-size: 50px;
+        top: 15%;
+        left: 50%;
+    }
 `;
 
 const Introduction = styled.p`
@@ -126,5 +174,5 @@ const Introduction = styled.p`
     font-weight: 400;
     line-height: normal;
     letter-spacing: 0.72px;
-
+  
 `;

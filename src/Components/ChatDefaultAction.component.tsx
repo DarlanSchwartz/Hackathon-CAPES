@@ -50,4 +50,13 @@ const SCChatDefaultAction = styled.div<{ $delay: number; }>`
         line-height: 22px;
         color: ${({ theme }) => theme.colors.text};
     }
+
+    @media (max-width: 500px) {
+      max-width: 190px;
+      height: 150px;
+      span{
+        font-size: 12px;
+        line-height: 18px;
+      }
+    }
 `;

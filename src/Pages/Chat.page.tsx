@@ -23,9 +23,11 @@ import useTypeWriter from "../Hooks/useTypeWriter.hook";
 import Toggle from "../Components/Toggle.component";
 import { ThemeContext } from "../Contexts/Theme.context";
 import { useSpeechRecognition } from "../Hooks/useSpeechRecognition.hook";
-//Refinar o prompt de maquina
-// POssibilitar envio de audio e resposta com adio
-// Possibilitar envio de arquivos de imagem 
+
+// Refinar o prompt de maquina
+// Resposta com audio
+// Possibilitar envio de arquivos de imagem
+// Envio automático apos 1s em silencio
 
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
@@ -235,6 +237,7 @@ const ChatWindowTop = styled.div`
     display: flex;
     flex-direction: column;
     gap: 20px;
+   
 `;
 
 const ChatInputContainer = styled.form`
@@ -268,6 +271,9 @@ const ChatDefaultActions = styled.div`
     flex-direction: row;
     gap: 20px;
     align-items: center;
+    @media (max-width: 500px) {
+       flex-wrap: wrap;
+    }
 `;
 const ChatGreetingsSpan = styled.span`
     color: var(--M3-sys-light-outline-variant, #CAC4D0);
@@ -278,6 +284,9 @@ const ChatGreetingsSpan = styled.span`
     opacity: 0;
     letter-spacing: -0.25px;
     animation: fadein 1s forwards 800ms;
+    @media (max-width: 500px) {
+     font-size: 30px;
+    }
 `;
 const ChatGreetings = styled.h1`
     font-family: Rubik;
@@ -289,6 +298,9 @@ const ChatGreetings = styled.h1`
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    @media (max-width: 500px) {
+     font-size: 30px;
+    }
 `;
 
 const ChatWindow = styled.main`
@@ -301,6 +313,10 @@ const ChatWindow = styled.main`
     background-color:${({ theme }) => theme.colors.background};
     padding-top: 120px;
     padding-bottom: 50px;
+      
+      @media (max-width: 500px) {
+        width: 100%;
+    }
 `;
 
 const ChatWindowContainer = styled.div`
@@ -311,6 +327,9 @@ const ChatWindowContainer = styled.div`
     width: 100%;
     padding-left: 100px;
     height: 100svh;
+    @media (max-width: 500px) {
+        padding-left: 0;
+    }
 `;
 
 const SidebarActionsGroupContainer = styled.ul`
@@ -332,6 +351,7 @@ const SCPageLogin = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+   
 `;
 
 const Sidebar = styled.nav`
@@ -347,4 +367,8 @@ const Sidebar = styled.nav`
     justify-content: space-between;
     padding: 20px 0;
     gap: 20px;
+    @media (max-width: 500px) {
+        display: none;
+        padding: 0;
+    }
 `;
