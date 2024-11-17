@@ -27,11 +27,12 @@ import { useSpeechRecognition } from "../Hooks/useSpeechRecognition.hook";
 // Refinar o prompt de maquina
 // Resposta com audio
 // Possibilitar envio de arquivos de imagem
-// Envio automático apos 1s em silencio
 
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
-    const { transcript, isListening, startListening, stopListening, browserSupportsSpeechRecognition, resetTranscript, interimTranscript } = useSpeechRecognition();
+    const { transcript, isListening, startListening, stopListening, browserSupportsSpeechRecognition, resetTranscript, interimTranscript } = useSpeechRecognition({
+        onSilence: () => handleChat()
+    });
     const [textPrompt, setTextPrompt] = useState<string>("");
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLInputElement>(null);

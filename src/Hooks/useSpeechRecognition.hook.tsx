@@ -10,7 +10,7 @@ if ("webkitSpeechRecognition" in window) {
     recognition.lang = window.navigator.language;
 }
 
-export const useSpeechRecognition = () => {
+export function useSpeechRecognition({ onSilence }: { onSilence: () => void; }) {
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState("");
     const [interimTranscript, setInterimTranscript] = useState("");
@@ -19,6 +19,7 @@ export const useSpeechRecognition = () => {
     useEffect(() => {
         setBrowserSupportsSpeechRecognition(!!recognition);
         if (recognition) {
+            let silenceTimeout: NodeJS.Timeout;
             //@ts-ignore
             recognition.onresult = (event) => {
                 let finalTranscript = "";
@@ -33,6 +34,15 @@ export const useSpeechRecognition = () => {
                 }
                 setTranscript(finalTranscript);
                 setInterimTranscript(interimTranscript);
+
+                if (silenceTimeout) {
+                    clearTimeout(silenceTimeout);
+                }
+                silenceTimeout = setTimeout(() => {
+                    onSilence();
+                }, 1000);
+
+
             };
         }
     }, []);
@@ -43,6 +53,7 @@ export const useSpeechRecognition = () => {
             setIsListening(true);
         }
     }
+
 
     function resetTranscript() {
         setTranscript("");
@@ -65,4 +76,4 @@ export const useSpeechRecognition = () => {
         stopListening,
         resetTranscript
     };
-};
+}
