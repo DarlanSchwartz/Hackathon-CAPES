@@ -8,35 +8,28 @@ type MessageProps = {
 
 export default function Message({ role, text }: MessageProps) {
     function substituirLinks(texto: string): (string | JSX.Element)[] {
-        const regex = /\[(.+?)\]\((https?:\/\/[^\)]+)\)/g; // Captura o formato [Texto](URL)
+        const regex = /\[(.+?)\]\((https?:\/\/[^\)]+)\)/g;
         const resultado: (string | JSX.Element)[] = [];
         let ultimoIndice = 0;
         let match: RegExpExecArray | null;
 
-        // Itera sobre as ocorrências do padrão no texto
         while ((match = regex.exec(texto)) !== null) {
             const textoAntes = texto.slice(ultimoIndice, match.index);
-            const textoLink = match[1]; // O texto entre []
-            const url = match[2]; // A URL entre ()
+            const textoLink = match[1];
+            const url = match[2];
 
-            // Adiciona o texto antes do link
+
             if (textoAntes) {
                 resultado.push(textoAntes);
             }
 
-            // Adiciona o componente link
             resultado.push(
-                createElement(
-                    "a",
-                    { href: url, target: "_blank", rel: "noopener noreferrer", key: resultado.length },
-                    textoLink // Renderiza apenas o texto sem os colchetes
-                )
+                createElement("a", { href: url, target: "_blank", rel: "noopener noreferrer", key: resultado.length }, textoLink)
             );
 
             ultimoIndice = regex.lastIndex;
         }
 
-        // Adiciona o texto restante após o último link
         if (ultimoIndice < texto.length) {
             resultado.push(texto.slice(ultimoIndice));
         }
@@ -77,6 +70,7 @@ const SCMessage = styled.div`
         width: fit-content;
         line-height: 25px;
         white-space: break-spaces;
+        color: ${({ theme }) => theme.colors.text};
     }
 
     img{

@@ -3,9 +3,9 @@ import styled, { useTheme } from "styled-components";
 export default function SidebarMenuItem({ icon, action, variant = "default", popup, showPopup }: { icon: React.ReactNode, action: () => void; variant?: "default" | "active"; popup?: React.ReactNode, showPopup?: boolean; }) {
     const theme = useTheme();
     return (
-        <SCSidebarMenuItem>
+        <SCSidebarMenuItem style={{ zIndex: 999 }}>
             {
-                showPopup && <div style={{ zIndex: 999 }}>{popup}</div>
+                showPopup && <div>{popup}</div>
             }
             <button onClick={action} style={variant === "active" ? { backgroundColor: theme.colors.lightPink2, borderRadius: 10 } : undefined}>
                 {icon}

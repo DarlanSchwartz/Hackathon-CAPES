@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ThemeContextProvider from "./Contexts/Theme.context.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AccessibilityProvider } from "./Contexts/Accessibility.context.tsx";
 
 const client = new QueryClient({
     defaultOptions: {
@@ -18,11 +19,13 @@ const client = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={client}>
-        <ThemeContextProvider >
-            <BrowserRouter>
-                <ResetStyle />
-                <App />
-            </BrowserRouter>
-        </ThemeContextProvider>
+        <AccessibilityProvider>
+            <ThemeContextProvider >
+                <BrowserRouter>
+                    <ResetStyle />
+                    <App />
+                </BrowserRouter>
+            </ThemeContextProvider>
+        </AccessibilityProvider>
     </QueryClientProvider>
 );

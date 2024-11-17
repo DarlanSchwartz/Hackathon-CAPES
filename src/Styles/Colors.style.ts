@@ -26,7 +26,7 @@ export const DarkColors: typeof LightColors = {
     lightPink: "#1d2021",
     lightPink2: "#2c2230",
     toggleBtnBackground: "#79747E",
-    messageBackground: "#F3F3F3",
+    messageBackground: "#1d2021",
     sidebarIcon: "white",
     headerText: "white",
     text: "white",

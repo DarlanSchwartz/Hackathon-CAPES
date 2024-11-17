@@ -2,12 +2,6 @@ import styled, { useTheme } from "styled-components";
 import { LuImage } from "react-icons/lu";
 import { IoMdMic } from "react-icons/io";
 import PageDefaultSkeleton from "./DefaultSkeleton.page";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { HiPlus } from "react-icons/hi";
-import { PiWarningCircleFill } from "react-icons/pi";
-import { GoClock } from "react-icons/go";
-import { IoSettingsOutline } from "react-icons/io5";
-import SidebarMenuItem from "../Components/SidebarMenuItem.component";
 import ChatDefaultAction from "../Components/ChatDefaultAction.component";
 import Header from "../Components/Header.component";
 import { FormEvent, useContext, useEffect, useRef, useState } from "react";
@@ -18,11 +12,10 @@ import Message from "../Components/Message.component";
 import { ChatRoles } from "../Protocols/Chat.types";
 import Toaster from "../Utils/Notifications.service";
 import { FaRegStopCircle } from "react-icons/fa";
-import { GoMoon } from "react-icons/go";
 import useTypeWriter from "../Hooks/useTypeWriter.hook";
-import Toggle from "../Components/Toggle.component";
-import { ThemeContext } from "../Contexts/Theme.context";
 import { useSpeechRecognition } from "../Hooks/useSpeechRecognition.hook";
+import { AccessibilityContext } from "../Contexts/Accessibility.context";
+import Sidebar from "../Components/Sidebar.component";
 
 // Refinar o prompt de maquina
 // Resposta com audio
@@ -30,15 +23,21 @@ import { useSpeechRecognition } from "../Hooks/useSpeechRecognition.hook";
 
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
-    const { transcript, isListening, startListening, stopListening, browserSupportsSpeechRecognition, resetTranscript, interimTranscript } = useSpeechRecognition({
-        onSilence: () => handleChat()
-    });
+    const {
+        transcript,
+        isListening,
+        startListening,
+        stopListening,
+        browserSupportsSpeechRecognition,
+        resetTranscript,
+        interimTranscript
+    } = useSpeechRecognition({ onSilence: () => handleChat() });
+    const { accessibilityEnabled, speak, endSpeech } = useContext(AccessibilityContext);
     const [textPrompt, setTextPrompt] = useState<string>("");
     const helloText = useTypeWriter({ text: "Olá, tudo bem?", speed: 60 });
     const inputRef = useRef<HTMLInputElement>(null);
     const chatHistoryRef = useRef<HTMLDivElement>(null);
-    const { darkMode, setDarkMode } = useContext(ThemeContext);
-    const [showSettings, setShowSettings] = useState(false);
+
     const [isAwaitingResponse, setIsAwaitingResponse] = useState(false);
     const theme = useTheme();
     const { mutate: chat } = useMutation({
@@ -58,6 +57,9 @@ export default function PageChat() {
         },
         onSuccess: (response) => {
             if (response) {
+                if (accessibilityEnabled) {
+                    speak(response.message.content);
+                }
                 setChatHistory(prevChatHistory => [...prevChatHistory, { message: response.message.content, role: ChatRoles.SYSTEM }]);
             }
         },
@@ -95,6 +97,11 @@ export default function PageChat() {
             e.stopPropagation();
             e.preventDefault();
         }
+        if (textPrompt === "") return;
+        setTimeout(() => {
+            scrollToChatBottom();
+        }, 100);
+        endSpeech();
         chat();
     }
 
@@ -102,26 +109,7 @@ export default function PageChat() {
         <PageDefaultSkeleton>
             <SCPageLogin >
                 <Header sidebarWidth={80} showAccessibilityToggle showChatSelector />
-                <Sidebar>
-                    <SidebarTopSettingsContainer>
-                        <SidebarMenuItem icon={<GiHamburgerMenu />} action={() => { }} />
-                        <SidebarMenuItem icon={<HiPlus />} action={() => { }} variant="active" />
-                    </SidebarTopSettingsContainer>
-                    <SidebarActionsGroupContainer>
-                        <SidebarMenuItem icon={<PiWarningCircleFill />} action={() => { }} />
-                        <SidebarMenuItem icon={<GoClock />} action={() => { }} />
-                        <SidebarMenuItem
-                            icon={<IoSettingsOutline />}
-                            action={() => setShowSettings(!showSettings)}
-                            showPopup={showSettings}
-                            popup={
-                                <PopUpSettings>
-                                    <GoMoon fontSize={30} style={{ width: "auto", height: "auto" }} /><span>Dark Mode</span><Toggle value={darkMode} setValue={setDarkMode} />
-                                </PopUpSettings>
-                            }
-                        />
-                    </SidebarActionsGroupContainer>
-                </Sidebar>
+                <Sidebar />
                 <ChatWindowContainer>
                     <ChatWindow>
                         <ChatHistory ref={chatHistoryRef}>
@@ -163,7 +151,6 @@ export default function PageChat() {
                                 </div>
                             }
                         </ChatHistory>
-
                         <ChatInputContainer onSubmit={handleChat} style={{ opacity: isAwaitingResponse ? 0.5 : 1 }}>
                             <input
                                 ref={inputRef}
@@ -201,29 +188,6 @@ export default function PageChat() {
     );
 }
 
-
-const PopUpSettings = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    position: absolute;
-    top: -250%;
-    left:100%;
-    width: 240px;
-    animation: fadein 200ms forwards;
-    span{
-        white-space: nowrap;
-        color: ${({ theme }) => theme.colors.text};
-    }
-    svg{
-        font-size: 30px;
-    }
-    background-color: ${({ theme }) => theme.colors.lightPink};
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-`;
 
 const ChatHistory = styled.div`
     display: flex;
@@ -333,43 +297,10 @@ const ChatWindowContainer = styled.div`
     }
 `;
 
-const SidebarActionsGroupContainer = styled.ul`
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-`;
-
-const SidebarTopSettingsContainer = styled(SidebarActionsGroupContainer)`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 60px;
-`;
-
 const SCPageLogin = styled.div`
     background-color: ${({ theme }) => theme.colors.background} !important;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-   
-`;
-
-const Sidebar = styled.nav`
-    height: 100svh;
-    background-color: ${({ theme }) => theme.colors.lightPink};
-    width: 80px;
-    position: fixed;
-    left: 0;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 0;
-    gap: 20px;
-    @media (max-width: 500px) {
-        display: none;
-        padding: 0;
-    }
 `;
