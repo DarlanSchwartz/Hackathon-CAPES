@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { createContext } from "react";
 import Logger from "../Services/Logger.service";
-import { useSpeech } from "react-text-to-speech";
 
 type AccessibilityContextProps = {
     accessibilityEnabled: boolean;
