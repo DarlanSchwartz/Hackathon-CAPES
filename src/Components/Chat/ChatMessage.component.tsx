@@ -6,7 +6,7 @@ type MessageProps = {
     role: "user" | "system";
 };
 
-export default function Message({ role, text }: MessageProps) {
+export default function ChatMessage({ role, text }: MessageProps) {
     function substituirLinks(texto: string): (string | JSX.Element)[] {
         const regex = /\[(.+?)\]\((https?:\/\/[^\)]+)\)/g;
         const resultado: (string | JSX.Element)[] = [];

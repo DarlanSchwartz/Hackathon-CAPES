@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import SidebarMenuItem from "./SidebarMenuItem.component";
+import SidebarMenuItem from "../SidebarMenuItem.component";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { GoClock, GoMoon } from "react-icons/go";
 import { HiPlus } from "react-icons/hi";
@@ -7,7 +7,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { PiWarningCircleFill } from "react-icons/pi";
 import Toggle from "./Toggle.component";
 import { useContext, useState } from "react";
-import { ThemeContext } from "../Contexts/Theme.context";
+import { ThemeContext } from "../../Contexts/Theme.context";
 
 export default function Sidebar() {
     const { darkMode, setDarkMode } = useContext(ThemeContext);

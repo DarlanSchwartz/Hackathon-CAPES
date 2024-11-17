@@ -3,7 +3,7 @@ import Toggle from "./Toggle.component";
 import { useContext } from "react";
 import { FaCaretDown } from "react-icons/fa";
 import { useWindowSize } from "@uidotdev/usehooks";
-import { AccessibilityContext } from "../Contexts/Accessibility.context";
+import { AccessibilityContext } from "../../Contexts/Accessibility.context";
 
 type HeaderProps = {
     sidebarWidth?: number;

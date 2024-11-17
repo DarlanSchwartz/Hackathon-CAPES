@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import PageDefaultSkeleton from "./DefaultSkeleton.page";
 import { useNavigate } from "react-router-dom";
-import Header from "../Components/Header.component";
+import Header from "../Components/Common/Header.component";
 
 export default function PageHero() {
     const navigate = useNavigate();

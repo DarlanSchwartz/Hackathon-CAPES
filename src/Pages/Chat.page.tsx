@@ -1,24 +1,23 @@
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import { LuImage } from "react-icons/lu";
 import { IoMdMic } from "react-icons/io";
 import PageDefaultSkeleton from "./DefaultSkeleton.page";
-import ChatDefaultAction from "../Components/ChatDefaultAction.component";
-import Header from "../Components/Header.component";
+import ChatDefaultAction from "../Components/Chat/ChatDefaultAction.component";
+import Header from "../Components/Common/Header.component";
 import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import ChatService from "../Services/Chat.service";
-import { ThreeDots } from 'react-loader-spinner';
-import Message from "../Components/Message.component";
+import ChatMessage from "../Components/Chat/ChatMessage.component";
 import { ChatRoles } from "../Protocols/Chat.types";
 import Toaster from "../Utils/Notifications.service";
 import { FaRegStopCircle } from "react-icons/fa";
 import useTypeWriter from "../Hooks/useTypeWriter.hook";
 import { useSpeechRecognition } from "../Hooks/useSpeechRecognition.hook";
 import { AccessibilityContext } from "../Contexts/Accessibility.context";
-import Sidebar from "../Components/Sidebar.component";
+import Sidebar from "../Components/Common/Sidebar.component";
+import ChatLoadingDots from "../Components/Chat/ChatLoadingDots.mini";
 
 // Refinar o prompt de maquina
-// Possibilitar envio de arquivos de imagem
 
 export default function PageChat() {
     const [chatHistory, setChatHistory] = useState<{ message: string; role: ChatRoles; }[]>([]);
@@ -40,7 +39,6 @@ export default function PageChat() {
     const [isAwaitingResponse, setIsAwaitingResponse] = useState(false);
     const [fileInputImagePreview, setFileInputImagePreview] = useState<string | null>(null);
     const [fileInputImageFile, setFileInputImageFile] = useState<File | null>(null);
-    const theme = useTheme();
     const { mutate: chat } = useMutation({
         mutationKey: ["chat", "talk", textPrompt],
         mutationFn: () => {
@@ -167,23 +165,12 @@ export default function PageChat() {
                             </ChatWindowTop>
                             {
                                 chatHistory.map((messageData, index) => (
-                                    <Message key={index} role={messageData.role} text={messageData.message} />
+                                    <ChatMessage key={index} role={messageData.role} text={messageData.message} />
                                 ))
                             }
                             {
-                                isAwaitingResponse &&
-                                <div style={{ alignSelf: "flex-end" }}>
-                                    <ThreeDots
-                                        visible={true}
-                                        height="80"
-                                        width="80"
-                                        color={theme.colors.purple}
-                                        radius="9"
-                                        ariaLabel="three-dots-loading"
-                                        wrapperStyle={{}}
-                                        wrapperClass=""
-                                    />
-                                </div>
+                                isAwaitingResponse && <ChatLoadingDots />
+
                             }
                         </ChatHistory>
                         <ChatInputContainer onSubmit={handleChat} style={{ opacity: isAwaitingResponse ? 0.5 : 1 }}>
