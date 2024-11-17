@@ -90,9 +90,10 @@ export default function PageChat() {
     }, [interimTranscript]);
 
     function handleChat(e?: FormEvent) {
+        console.log("handleChat");
         if (e) {
-            e.stopPropagation();
-            e.preventDefault();
+            e?.stopPropagation();
+            e?.preventDefault();
         }
         if (textPrompt === "") return;
         setTimeout(() => {
