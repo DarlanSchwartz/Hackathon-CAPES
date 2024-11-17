@@ -61,9 +61,10 @@ export function useSpeechRecognition({ onSilence }: { onSilence: () => void; }) 
     }
 
     function stopListening() {
+        console.log("stopListening");
+        setIsListening(false);
         if (recognition) {
             recognition.stop();
-            setIsListening(false);
         }
     }
 

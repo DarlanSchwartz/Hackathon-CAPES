@@ -33,7 +33,7 @@ export default function ChatInput({ onClickRemoveImage, onClickRecordAudio, onCl
             {
                 fileInputImagePreview &&
                 <ImageFilePreviewContainer>
-                    <button onClick={onClickRemoveImage}>X</button>
+                    <button type="button" onClick={onClickRemoveImage}>X</button>
                     <ImageFile src={fileInputImagePreview} />
                 </ImageFilePreviewContainer>}
             <textarea
@@ -45,21 +45,21 @@ export default function ChatInput({ onClickRemoveImage, onClickRecordAudio, onCl
                 value={textPrompt}
                 disabled={isAwaitingResponse} />
             <InputActionsContainer>
-                <InputButton disabled={isAwaitingResponse} onClick={() => { if (fileInputRef) fileInputRef.current?.click(); }}>
+                <InputButton disabled={isAwaitingResponse} onClick={() => { if (fileInputRef) fileInputRef.current?.click(); }} type="button">
                     <LuImage fontSize={30} />
                 </InputButton>
                 {
                     isListening ?
-                        <InputButton disabled={isAwaitingResponse} onClick={onClickStopRecordAudio} >
+                        <InputButton disabled={isAwaitingResponse} onClick={onClickStopRecordAudio} type="button" >
                             <FaRegStopCircle fontSize={30} />
                         </InputButton>
                         :
-                        <InputButton disabled={isAwaitingResponse} onClick={onClickRecordAudio} >
+                        <InputButton disabled={isAwaitingResponse} onClick={onClickRecordAudio} type="button">
                             <IoMdMic fontSize={30} />
                         </InputButton>
                 }
                 {
-                    isMobile && <InputButton disabled={isAwaitingResponse} onClick={(e) => onSubmit(e as unknown as React.FormEvent<HTMLFormElement>)}>
+                    isMobile && <InputButton disabled={isAwaitingResponse} type="submit" onClick={(e) => onSubmit(e as unknown as React.FormEvent<HTMLFormElement>)}>
                         <IoSend fontSize={30} color={theme.colors.purple} />
                     </InputButton>
                 }
