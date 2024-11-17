@@ -2,10 +2,7 @@ import { LocalStorageKeys } from "../Protocols/Main.types";
 import Logger from "./Logger.service";
 
 export default class LocalStorage {
-    public static getItem<T = unknown>(
-        storageKey: LocalStorageKeys,
-        parse?: boolean
-    ) {
+    public static getItem<T = unknown>(storageKey: LocalStorageKeys, parse?: boolean) {
         if (!storageKey) return null;
         const value = localStorage.getItem(storageKey);
         if (!value) return null;
